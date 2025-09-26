@@ -372,41 +372,6 @@ class PlayState extends MusicBeatState
 			case 'phillyBlazin': new PhillyBlazin();	//Weekend 1 - Blazin
 		}
 		if(isPixelStage) introSoundsSuffix = '-pixel';
-
-		if (!SONG.format.startsWith('psychness'))
-		{
-			SONG.characters = [];
-			SONG.characters.push({
-				name: SONG.player1,
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: true,
-				noteVisible: true,
-				characterType: 'player',
-				index: 1
-			});
-			SONG.characters.push({
-				name: SONG.player2,
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: true,
-				noteVisible: true,
-				characterType: 'opponent',
-				index: 1
-			});
-			SONG.characters.push({
-				name: SONG.gfVersion != null && SONG.gfVersion.length > 0 ? SONG.gfVersion : 'gf', //Fix for the Chart Editor
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: false,
-				noteVisible: false,
-				characterType: 'girlfriend',
-				index: 1
-			});
-		}
 		
 		for (char in SONG.characters)
 		{
@@ -1507,20 +1472,6 @@ class PlayState extends MusicBeatState
 		for (event in songData.events) //Event Notes
 			for (i in 0...event[1].length)
 				makeEvent(event, i);
-
-		if (!songData.format.startsWith('psychness')) // Format for Psych Chart
-		{
-			for (section in sectionsData)
-			{
-				if (section.mustHitSection)
-					section.focusCharacter = 0;
-				else
-					section.focusCharacter = 1;
-				if (section.gfSection)
-						section.focusCharacter = 2;
-			}
-			trace('Formated Chart for Psychness Engine!');
-		}
 
 		unspawnNotes.sort(sortByTime);
 		generatedMusic = true;

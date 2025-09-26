@@ -9,11 +9,12 @@ import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import states.editors.MasterEditorMenu;
 import lime.math.Rectangle;
+import options.ControlsSubState;
 
 class DebugDisplay extends Sprite
 {
 	public static var instance:DebugDisplay;
-
+	
 	var frameBG:Bitmap;
 	var frameTF:TextField;
 
@@ -166,6 +167,32 @@ class DebugDisplay extends Sprite
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent)
 		{
+			// Take screenshot
+			if (e.keyCode == ClientPrefs.keyBinds.get('screen_shot')[0] || e.keyCode == ClientPrefs.keyBinds.get('screen_shot')[1])
+			{
+				function formatNum(num:Int):String
+				{
+					return num < 10 ? '0' + num : '' + num;
+				}
+
+				if (!FileSystem.exists("./screenshots/"))
+					FileSystem.createDirectory("./screenshots/");
+
+				var fileName:String = 'Screenshot-${formatNum(Date.now().getFullYear())}-${formatNum(Date.now().getMonth() + 1)}-${formatNum(Date.now().getDate())} ${formatNum(Date.now().getHours())}${formatNum(Date.now().getMinutes())}${formatNum(Date.now().getSeconds())}';
+				File.saveBytes('screenshots/' + fileName + '.png',
+					FlxG.stage.window.readPixels(new Rectangle(0, 0, FlxG.stage.window.width, FlxG.stage.window.height)).encode());
+
+				var flashBitmap = new Bitmap(new BitmapData(Std.int(FlxG.stage.width), Std.int(FlxG.stage.height), false, 0xFFFFFFFF));
+				var flashSpr = new Sprite();
+				flashSpr.addChild(flashBitmap);
+				FlxG.stage.addChild(flashSpr);
+				if (!ClientPrefs.data.flashing)
+					flashSpr.alpha = 0.1;
+				FlxTween.tween(flashSpr, {alpha: 0}, 0.15, {ease: FlxEase.quadOut, onComplete: _ -> FlxG.stage.removeChild(flashSpr)});
+
+				FlxG.sound.play(Paths.sound('screenshot'));
+			}
+
 			if (e.keyCode == ClientPrefs.keyBinds.get('debug_3')[0] || e.keyCode == ClientPrefs.keyBinds.get('debug_3')[1])
 			{
 				curDisplay = FlxMath.wrap(curDisplay + 1, 0, 3);
@@ -185,8 +212,18 @@ class DebugDisplay extends Sprite
 			}
 
 			if (e.keyCode == ClientPrefs.keyBinds.get('debug_4')[0] || e.keyCode == ClientPrefs.keyBinds.get('debug_4')[1])
-			{
 				MasterEditorMenu.showConsole();
+
+			if (e.keyCode == ClientPrefs.keyBinds.get('debug_5')[0] || e.keyCode == ClientPrefs.keyBinds.get('debug_5')[1])
+			{
+				if (MusicBeatState.instance.reloadingState)
+					return;
+				var curState:String = Type.getClassName(Type.getClass(FlxG.state));
+				if (curState != 'psychlua.CustomState')
+					MusicBeatState.resetState();
+				else
+					MusicBeatState.switchState(new CustomState(CustomState.name));
+				MusicBeatState.instance.reloadingState = true;
 			}
 		});
 
@@ -231,7 +268,8 @@ class DebugDisplay extends Sprite
 
 		engineTF.text = 'Psych Engine: v${MainMenuState.psychEngineVersion}' + '\nPsychness Engine: v${MainMenuState.psychnessEngineVersion}';
 
-		stateTF.text = 'Current State: ${Type.getClassName(Type.getClass(FlxG.state))}' + '\nObjects: ${FlxG.state.members.length}';
+		var curState:String = Type.getClassName(Type.getClass(FlxG.state));
+		stateTF.text = 'Current State: $curState' + (curState == 'psychlua.CustomState' ? ' (${CustomState.name})' : '') + '\nObjects: ${FlxG.state.members.length}';
 
 		scriptTF.text = 'Running Lua Scripts: ${MusicBeatState.instance.luaArray.length}'
 			+ '\nRunning Haxe Sctipts: ${MusicBeatState.instance.hscriptArray.length}';
@@ -272,32 +310,6 @@ class DebugDisplay extends Sprite
 
 		debugTF.x = debugBG.x + 5;
 		debugTF.y = debugBG.y + 5;
-
-		// Take screenshot
-		if (Controls.instance.justPressed('screen_shot'))
-		{
-			function formatNum(num:Int):String
-			{
-				return num < 10 ? '0' + num : '' + num;
-			}
-
-			if (!FileSystem.exists("./screenshots/"))
-				FileSystem.createDirectory("./screenshots/");
-
-			var fileName:String = 'Screenshot-${formatNum(Date.now().getFullYear())}-${formatNum(Date.now().getMonth() + 1)}-${formatNum(Date.now().getDate())} ${formatNum(Date.now().getHours())}${formatNum(Date.now().getMinutes())}${formatNum(Date.now().getSeconds())}';
-			File.saveBytes('screenshots/' + fileName + '.png',
-				FlxG.stage.window.readPixels(new Rectangle(0, 0, FlxG.stage.window.width, FlxG.stage.window.height)).encode());
-
-			var flashBitmap = new Bitmap(new BitmapData(Std.int(FlxG.stage.width), Std.int(FlxG.stage.height), false, 0xFFFFFFFF));
-			var flashSpr = new Sprite();
-			flashSpr.addChild(flashBitmap);
-			FlxG.stage.addChild(flashSpr);
-			if (!ClientPrefs.data.flashing)
-				flashSpr.alpha = 0.1;
-			FlxTween.tween(flashSpr, {alpha: 0}, 0.15, {ease: FlxEase.quadOut, onComplete: _ -> FlxG.stage.removeChild(flashSpr)});
-
-			FlxG.sound.play(Paths.sound('screenshot'));
-		}
 
 		switch (curDisplay)
 		{

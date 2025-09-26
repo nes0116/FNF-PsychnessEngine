@@ -4916,7 +4916,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			displayUnsavedWarningPrompt(function()
 			{
 				PlayState.chartingMode = false;
-				MusicBeatState.switchState(new states.editors.MasterEditorMenu());
+				MusicBeatState.switchState(new MainMenuState());
 				FlxG.sound.playMusic(Paths.music(MainMenuState.menuSong));
 				FlxG.mouse.visible = false;
 			});
@@ -5929,10 +5929,29 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		for (secNum => section in PlayState.SONG.notes)
 			PlayState.SONG.notes[secNum].sectionNotes = [];
 
-		PlayState.SONG.player1 = null;
-		PlayState.SONG.player2 = null;
-		PlayState.SONG.gfVersion = null;
 		PlayState.SONG.format = 'psychness';
+
+		if (Reflect.hasField(PlayState.SONG, 'player1'))
+			Reflect.deleteField(PlayState.SONG, 'player1');
+		if (Reflect.hasField(PlayState.SONG, 'player2'))
+			Reflect.deleteField(PlayState.SONG, 'player2');
+		if (Reflect.hasField(PlayState.SONG, 'gfVersion'))
+			Reflect.deleteField(PlayState.SONG, 'gfVersion');
+
+		for (section in PlayState.SONG.notes)
+		{
+			if (section.mustHitSection)
+				section.focusCharacter = 0;
+			else
+				section.focusCharacter = 1;
+			if (section.gfSection)
+				section.focusCharacter = 2;
+			
+			if (Reflect.hasField(section, 'mustHitSection'))
+				Reflect.deleteField(section, 'mustHitSection');
+			if (Reflect.hasField(section, 'gfSection'))
+				Reflect.deleteField(section, 'gfSection');
+		}
 
 		notes.sort(PlayState.sortByTime);
 		var noteSec:Int = 0;
