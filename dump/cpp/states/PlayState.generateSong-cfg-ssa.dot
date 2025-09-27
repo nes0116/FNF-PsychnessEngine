@@ -1,0 +1,594 @@
+digraph graphname {
+	node [shape=plaintext];
+n7565836[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565836) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565835[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565835) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = ! eventFound</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565834[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565834) BKConditional</td></tr>
+	<tr><td port="e0" align="left">eventFound = true</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565833[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565833) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = sys.FileSystem.exists(_lastPath)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565832[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565832) BKException</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565831[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565831) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var path = this.songName</td></tr>
+	<tr><td port="e1" align="left">var invalidChars = new EReg(\"[~&amp;;:&lt;&gt;#\\\\s]\", \"g\")</td></tr>
+	<tr><td port="e2" align="left">var hideChars = new EReg(\"[.,'\\\"%?!]\", \"g\")</td></tr>
+	<tr><td port="e3" align="left">var formattedFolder = invalidChars.replace(path, \"-\")</td></tr>
+	<tr><td port="e4" align="left">var formattedFolder = hideChars.replace(formattedFolder, \"\")</td></tr>
+	<tr><td port="e5" align="left">var formattedFolder = StringTools.trim(formattedFolder).toLowerCase()</td></tr>
+	<tr><td port="e6" align="left">var invalidChars = new EReg(\"[~&amp;;:&lt;&gt;#\\\\s]\", \"g\")</td></tr>
+	<tr><td port="e7" align="left">var hideChars = new EReg(\"[.,'\\\"%?!]\", \"g\")</td></tr>
+	<tr><td port="e8" align="left">var formattedSong = invalidChars.replace(\"events\", \"-\")</td></tr>
+	<tr><td port="e9" align="left">var formattedSong = hideChars.replace(formattedSong, \"\")</td></tr>
+	<tr><td port="e10" align="left">var formattedSong = StringTools.trim(formattedSong).toLowerCase()</td></tr>
+	<tr><td port="e11" align="left">var folder = null</td></tr>
+	<tr><td port="e12" align="left">var _lastPath = \"\" + formattedFolder</td></tr>
+	<tr><td port="e13" align="left">var _lastPath = _lastPath + \"/\"</td></tr>
+	<tr><td port="e14" align="left">var _lastPath = _lastPath + formattedSong</td></tr>
+	<tr><td port="e15" align="left">var _lastPath = \"data/\" + _lastPath</td></tr>
+	<tr><td port="e16" align="left">var _lastPath = _lastPath + \".json\"</td></tr>
+	<tr><td port="e17" align="left">var _lastPath = backend.Paths.getPath(_lastPath, cast \"TEXT\", folder, true)</td></tr>
+	<tr><td port="e18" align="left">var eventFound = false</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565830[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565830) BKNormal</td></tr>
+	<tr><td port="e0" align="left">flixel.FlxG.sound.list.add(this.inst)</td></tr>
+	<tr><td port="e1" align="left">this.notes = new flixel.group.FlxTypedGroup(null)</td></tr>
+	<tr><td port="e2" align="left">this.noteGroup.add(this.notes)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565829[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565829) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565828[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565828) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565827[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565827) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565826[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565826) BKCatch</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = true</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565825[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565825) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = this.inst</td></tr>
+	<tr><td port="e1" align="left">var song = songData.song</td></tr>
+	<tr><td port="e2" align="left">var invalidChars = new EReg(\"[~&amp;;:&lt;&gt;#\\\\s]\", \"g\")</td></tr>
+	<tr><td port="e3" align="left">var hideChars = new EReg(\"[.,'\\\"%?!]\", \"g\")</td></tr>
+	<tr><td port="e4" align="left">var _hx_tmp = invalidChars.replace(song, \"-\")</td></tr>
+	<tr><td port="e5" align="left">var _hx_tmp = hideChars.replace(_hx_tmp, \"\")</td></tr>
+	<tr><td port="e6" align="left">var _hx_tmp = StringTools.trim(_hx_tmp).toLowerCase()</td></tr>
+	<tr><td port="e7" align="left">var _hx_tmp = \"\" + _hx_tmp</td></tr>
+	<tr><td port="e8" align="left">var _hx_tmp = _hx_tmp + \"/Inst\"</td></tr>
+	<tr><td port="e9" align="left">var _hx_tmp = backend.Paths.returnSound(_hx_tmp, \"songs\", true, null)</td></tr>
+	<tr><td port="e10" align="left">_hx_tmp.loadEmbedded(_hx_tmp, null, null, null)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565824[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565824) BKException</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565823[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565823) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565822[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565822) BKNormal</td></tr>
+	<tr><td port="e0" align="left">this.vocals.set_pitch(this.playbackRate)</td></tr>
+	<tr><td port="e1" align="left">this.opponentVocals.set_pitch(this.playbackRate)</td></tr>
+	<tr><td port="e2" align="left">flixel.FlxG.sound.list.add(this.vocals)</td></tr>
+	<tr><td port="e3" align="left">flixel.FlxG.sound.list.add(this.opponentVocals)</td></tr>
+	<tr><td port="e4" align="left">this.inst = new flixel.sound.FlxSound()</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565821[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565821) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565820[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565820) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565819[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565819) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565818[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565818) BKCatch</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = true</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565817[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565817) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565816[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565816) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565815[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565815) BKNormal</td></tr>
+	<tr><td port="e0" align="left">this.opponentVocals.loadEmbedded(oppVocals, null, null, null)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565814[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565814) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565813[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565813) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565812[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565812) BKNormal</td></tr>
+	<tr><td port="e0" align="left">_hx_tmp = cast oppVocals.get_length() &gt; 0</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565811[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565811) BKConditional</td></tr>
+	<tr><td port="e0" align="left">_hx_tmp = false</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565810[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565810) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565809[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565809) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp</td></tr>
+	<tr><td port="e1" align="left">var _hx_tmp = oppVocals != null</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565808[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565808) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var oppVocals = backend.Paths.returnSound(songKey, \"songs\", true, false)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565807[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565807) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var songKey = \"-\" + postfix</td></tr>
+	<tr><td port="e1" align="left">songKey = songKey + songKey</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565806[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565806) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var invalidChars = new EReg(\"[~&amp;;:&lt;&gt;#\\\\s]\", \"g\")</td></tr>
+	<tr><td port="e1" align="left">var hideChars = new EReg(\"[.,'\\\"%?!]\", \"g\")</td></tr>
+	<tr><td port="e2" align="left">var songKey = invalidChars.replace(song, \"-\")</td></tr>
+	<tr><td port="e3" align="left">var songKey = hideChars.replace(songKey, \"\")</td></tr>
+	<tr><td port="e4" align="left">var songKey = StringTools.trim(songKey).toLowerCase()</td></tr>
+	<tr><td port="e5" align="left">var songKey = \"\" + songKey</td></tr>
+	<tr><td port="e6" align="left">var songKey = songKey + \"/Voices\"</td></tr>
+	<tr><td port="e7" align="left">var _hx_tmp = postfix != null</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565805[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565805) BKNormal</td></tr>
+	<tr><td port="e0" align="left">postfix = this.dad.vocalsFile</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565804[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565804) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565803[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565803) BKConditional</td></tr>
+	<tr><td port="e0" align="left">postfix = \"Opponent\"</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565802[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565802) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565801[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565801) BKNormal</td></tr>
+	<tr><td port="e0" align="left">postfix = this.dad.vocalsFile.length &lt; 1</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565800[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565800) BKConditional</td></tr>
+	<tr><td port="e0" align="left">postfix = true</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565799[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565799) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565798[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565798) BKNormal</td></tr>
+	<tr><td port="e0" align="left">_hx_tmp.loadEmbedded(_hx_tmp, null, null, null)</td></tr>
+	<tr><td port="e1" align="left">var song = songData.song</td></tr>
+	<tr><td port="e2" align="left">var postfix</td></tr>
+	<tr><td port="e3" align="left">var postfix</td></tr>
+	<tr><td port="e4" align="left">var postfix = ! this.dad.vocalsFile == null</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565797[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565797) BKNormal</td></tr>
+	<tr><td port="e0" align="left">_hx_tmp = backend.Paths.returnSound(songKey, \"songs\", true, false)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565796[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565796) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565795[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565795) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var songKey = \"-\" + postfix</td></tr>
+	<tr><td port="e1" align="left">songKey = songKey + songKey</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565794[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565794) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var song = songData.song</td></tr>
+	<tr><td port="e1" align="left">var postfix = null</td></tr>
+	<tr><td port="e2" align="left">var invalidChars = new EReg(\"[~&amp;;:&lt;&gt;#\\\\s]\", \"g\")</td></tr>
+	<tr><td port="e3" align="left">var hideChars = new EReg(\"[.,'\\\"%?!]\", \"g\")</td></tr>
+	<tr><td port="e4" align="left">var songKey = invalidChars.replace(song, \"-\")</td></tr>
+	<tr><td port="e5" align="left">var songKey = hideChars.replace(songKey, \"\")</td></tr>
+	<tr><td port="e6" align="left">var songKey = StringTools.trim(songKey).toLowerCase()</td></tr>
+	<tr><td port="e7" align="left">var songKey = \"\" + songKey</td></tr>
+	<tr><td port="e8" align="left">var songKey = songKey + \"/Voices\"</td></tr>
+	<tr><td port="e9" align="left">var _hx_tmp = postfix != null</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565793[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565793) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565792[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565792) BKConditional</td></tr>
+	<tr><td port="e0" align="left">_hx_tmp = playerVocals</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565791[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565791) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = this.vocals</td></tr>
+	<tr><td port="e1" align="left">var _hx_tmp</td></tr>
+	<tr><td port="e2" align="left">var _hx_tmp = playerVocals != null</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565790[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565790) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var playerVocals = backend.Paths.returnSound(songKey, \"songs\", true, false)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565789[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565789) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var songKey = \"-\" + postfix</td></tr>
+	<tr><td port="e1" align="left">songKey = songKey + songKey</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565788[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565788) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var invalidChars = new EReg(\"[~&amp;;:&lt;&gt;#\\\\s]\", \"g\")</td></tr>
+	<tr><td port="e1" align="left">var hideChars = new EReg(\"[.,'\\\"%?!]\", \"g\")</td></tr>
+	<tr><td port="e2" align="left">var songKey = invalidChars.replace(song, \"-\")</td></tr>
+	<tr><td port="e3" align="left">var songKey = hideChars.replace(songKey, \"\")</td></tr>
+	<tr><td port="e4" align="left">var songKey = StringTools.trim(songKey).toLowerCase()</td></tr>
+	<tr><td port="e5" align="left">var songKey = \"\" + songKey</td></tr>
+	<tr><td port="e6" align="left">var songKey = songKey + \"/Voices\"</td></tr>
+	<tr><td port="e7" align="left">var _hx_tmp = postfix != null</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565787[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565787) BKNormal</td></tr>
+	<tr><td port="e0" align="left">postfix = this.boyfriend.vocalsFile</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565786[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565786) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565785[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565785) BKConditional</td></tr>
+	<tr><td port="e0" align="left">postfix = \"Player\"</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565784[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565784) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565783[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565783) BKNormal</td></tr>
+	<tr><td port="e0" align="left">postfix = this.boyfriend.vocalsFile.length &lt; 1</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565782[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565782) BKConditional</td></tr>
+	<tr><td port="e0" align="left">postfix = true</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565781[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565781) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565780[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565780) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var song = songData.song</td></tr>
+	<tr><td port="e1" align="left">var postfix</td></tr>
+	<tr><td port="e2" align="left">var postfix</td></tr>
+	<tr><td port="e3" align="left">var postfix = ! this.boyfriend.vocalsFile == null</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565779[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565779) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var songData = songData.needsVoices</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565778[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565778) BKException</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565777[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565777) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565776[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565776) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var songData = states.PlayState.SONG</td></tr>
+	<tr><td port="e1" align="left">backend.Conductor.set_bpm(songData.bpm)</td></tr>
+	<tr><td port="e2" align="left">this.curSong = songData.song</td></tr>
+	<tr><td port="e3" align="left">this.vocals = new flixel.sound.FlxSound()</td></tr>
+	<tr><td port="e4" align="left">this.opponentVocals = new flixel.sound.FlxSound()</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565775[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565775) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565774[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565774) BKNormal</td></tr>
+	<tr><td port="e0" align="left">` = ` + 1</td></tr>
+	<tr><td port="e1" align="left">var i = ` - 1</td></tr>
+	<tr><td port="e2" align="left">var _hx_tmp = \"defaultOpponentStrumX\" + i</td></tr>
+	<tr><td port="e3" align="left">this.setOnScripts(_hx_tmp, this.opponentStrums.members[i].x, null)</td></tr>
+	<tr><td port="e4" align="left">var _hx_tmp = \"defaultOpponentStrumY\" + i</td></tr>
+	<tr><td port="e5" align="left">this.setOnScripts(_hx_tmp, this.opponentStrums.members[i].y, null)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565773[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565773) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565772[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565772) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = ! ((` &lt; `))</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565771[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565771) BKLoopHead</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565770[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565770) BKSub</td></tr>
+	<tr><td port="e0" align="left">var ` = 0</td></tr>
+	<tr><td port="e1" align="left">var ` = this.opponentStrums.length</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565769[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565769) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565768[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565768) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565767[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565767) BKNormal</td></tr>
+	<tr><td port="e0" align="left">` = ` + 1</td></tr>
+	<tr><td port="e1" align="left">var i = ` - 1</td></tr>
+	<tr><td port="e2" align="left">var _hx_tmp = \"defaultPlayerStrumX\" + i</td></tr>
+	<tr><td port="e3" align="left">this.setOnScripts(_hx_tmp, this.playerStrums.members[i].x, null)</td></tr>
+	<tr><td port="e4" align="left">var _hx_tmp = \"defaultPlayerStrumY\" + i</td></tr>
+	<tr><td port="e5" align="left">this.setOnScripts(_hx_tmp, this.playerStrums.members[i].y, null)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565766[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565766) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565765[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565765) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = ! ((` &lt; `))</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565764[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565764) BKLoopHead</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565763[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565763) BKSub</td></tr>
+	<tr><td port="e0" align="left">var ` = 0</td></tr>
+	<tr><td port="e1" align="left">var ` = this.playerStrums.length</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565762[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565762) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565761[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565761) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565760[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565760) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565759[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565759) BKConditional</td></tr>
+	<tr><td port="e0" align="left">this.generateStaticArrows(char, 0)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565758[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565758) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = char.characterType == cast \"girlfriend\"</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565757[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565757) BKConditional</td></tr>
+	<tr><td port="e0" align="left">this.generateStaticArrows(char, 1)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565756[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565756) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = char.characterType == cast \"player\"</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565755[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565755) BKConditional</td></tr>
+	<tr><td port="e0" align="left">this.generateStaticArrows(char, 0)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565754[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565754) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var char = `[`]</td></tr>
+	<tr><td port="e1" align="left">` = ` + 1</td></tr>
+	<tr><td port="e2" align="left">var _hx_tmp = char.characterType == cast \"opponent\"</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565753[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565753) BKConditional</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565752[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565752) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = ! ((` &lt; `.length))</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565751[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565751) BKLoopHead</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565750[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565750) BKSub</td></tr>
+	<tr><td port="e0" align="left">var ` = 0</td></tr>
+	<tr><td port="e1" align="left">var ` = states.PlayState.SONG.characters</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565749[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565749) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565748[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565748) BKNormal</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565747[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565747) BKNormal</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = _hx_tmp * _hx_tmp</td></tr>
+	<tr><td port="e1" align="left">this.set_songSpeed(_hx_tmp)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565746[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565746) BKConditional</td></tr>
+	<tr><td port="e0" align="left">_hx_tmp = defaultValue</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565745[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565745) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var this = backend.ClientPrefs.data.gameplaySettings</td></tr>
+	<tr><td port="e1" align="left">_hx_tmp = cast this.get(\"scrollspeed\")</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565744[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565744) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var _hx_tmp = states.PlayState.SONG.speed</td></tr>
+	<tr><td port="e1" align="left">var defaultValue = null</td></tr>
+	<tr><td port="e2" align="left">var this = backend.ClientPrefs.defaultData.gameplaySettings</td></tr>
+	<tr><td port="e3" align="left">defaultValue = cast this.get(\"scrollspeed\")</td></tr>
+	<tr><td port="e4" align="left">var _hx_tmp</td></tr>
+	<tr><td port="e5" align="left">var this = backend.ClientPrefs.data.gameplaySettings</td></tr>
+	<tr><td port="e6" align="left">var _hx_tmp = cast this.exists(\"scrollspeed\")</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565743[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565743) BKNormal</td></tr>
+	<tr><td port="e0" align="left">this.set_songSpeed(_hx_tmp)</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565742[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565742) BKConditional</td></tr>
+	<tr><td port="e0" align="left">_hx_tmp = defaultValue</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565741[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565741) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var this = backend.ClientPrefs.data.gameplaySettings</td></tr>
+	<tr><td port="e1" align="left">_hx_tmp = cast this.get(\"scrollspeed\")</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565740[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565740) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var defaultValue = null</td></tr>
+	<tr><td port="e1" align="left">var this = backend.ClientPrefs.defaultData.gameplaySettings</td></tr>
+	<tr><td port="e2" align="left">defaultValue = cast this.get(\"scrollspeed\")</td></tr>
+	<tr><td port="e3" align="left">var _hx_tmp</td></tr>
+	<tr><td port="e4" align="left">var this = backend.ClientPrefs.data.gameplaySettings</td></tr>
+	<tr><td port="e5" align="left">var _hx_tmp = cast this.exists(\"scrollspeed\")</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565739[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565739) BKSub</td></tr>
+	<tr><td port="e0" align="left">var ` = this.songSpeedType</td></tr>
+	<tr><td port="e1" align="left">var ` = `</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565738[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565738) BKNormal</td></tr>
+	<tr><td port="e0" align="left">this.songSpeedType = _hx_tmp</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565737[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565737) BKConditional</td></tr>
+	<tr><td port="e0" align="left">_hx_tmp = defaultValue</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565736[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565736) BKConditional</td></tr>
+	<tr><td port="e0" align="left">var this = backend.ClientPrefs.data.gameplaySettings</td></tr>
+	<tr><td port="e1" align="left">_hx_tmp = cast this.get(\"scrolltype\")</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565735[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565735) BKFunctionEnd</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n7565734[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(7565734) BKFunctionBegin</td></tr>
+	<tr><td port="e0" align="left">this.set_songSpeed(states.PlayState.SONG.speed)</td></tr>
+	<tr><td port="e1" align="left">var defaultValue = null</td></tr>
+	<tr><td port="e2" align="left">var this = backend.ClientPrefs.defaultData.gameplaySettings</td></tr>
+	<tr><td port="e3" align="left">defaultValue = cast this.get(\"scrolltype\")</td></tr>
+	<tr><td port="e4" align="left">var _hx_tmp</td></tr>
+	<tr><td port="e5" align="left">var this = backend.ClientPrefs.data.gameplaySettings</td></tr>
+	<tr><td port="e6" align="left">var _hx_tmp = cast this.exists(\"scrolltype\")</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n1[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(1) BKRoot</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n1:out -> n7565734:in[label="CFGFunction"];
+}

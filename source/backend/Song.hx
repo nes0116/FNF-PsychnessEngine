@@ -85,120 +85,124 @@ class Song
 	public var gfVersion:String = 'gf';
 	public var format:String = 'psychness';
 
-	public static function convert(songJson:Dynamic) // Convert old charts to psychness format
+	public static function convert(songJson:Dynamic, format:String = 'psychness') // Convert old charts to psychness format
 	{
-		if (songJson.gfVersion == null)
+		switch (format)
 		{
-			songJson.gfVersion = songJson.player3;
-			if (Reflect.hasField(songJson, 'player3'))
-				Reflect.deleteField(songJson, 'player3');
-		}
-
-		if (songJson.characters == null)
-		{
-			songJson.characters = [];
-			songJson.characters.push({
-				name: songJson.player1,
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: true,
-				noteVisible: true,
-				characterType: 'player',
-				index: 1
-			});
-			songJson.characters.push({
-				name: songJson.player2,
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: true,
-				noteVisible: true,
-				characterType: 'opponent',
-				index: 1
-			});
-			songJson.characters.push({
-				name: songJson.gfVersion,
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: false,
-				noteVisible: false,
-				characterType: 'girlfriend',
-				index: 1
-			});
-
-			if (Reflect.hasField(songJson, 'player1'))
-				Reflect.deleteField(songJson, 'player1');
-			if (Reflect.hasField(songJson, 'player2'))
-				Reflect.deleteField(songJson, 'player2');
-			if (Reflect.hasField(songJson, 'gfVersion'))
-				Reflect.deleteField(songJson, 'gfVersion');
-		}
-
-		var sectionData:Array<SwagSection> = songJson.notes;
-		for (section in sectionData)
-		{
-			if (section.mustHitSection)
-				section.focusCharacter = 0;
-			else
-				section.focusCharacter = 1;
-			if (section.gfSection)
-				section.focusCharacter = 2;
-			
-			if (Reflect.hasField(section, 'mstHitSection'))
-				Reflect.deleteField(section, 'mustHitSection');
-			if (Reflect.hasField(section, 'gfSection'))
-				Reflect.deleteField(section, 'gfSection');
-		}
-
-		if (songJson.events == null)
-		{
-			songJson.events = [];
-			for (secNum in 0...songJson.notes.length)
-			{
-				var sec:SwagSection = songJson.notes[secNum];
-
-				var i:Int = 0;
-				var notes:Array<Dynamic> = sec.sectionNotes;
-				var len:Int = notes.length;
-				while (i < len)
+			case 'psych_v1':
+				if (songJson.gfVersion == null)
 				{
-					var note:Array<Dynamic> = notes[i];
-					if (note[1] < 0)
-					{
-						songJson.events.push([note[0], [[note[2], note[3], note[4]]]]);
-						notes.remove(note);
-						len = notes.length;
-					}
-					else
-						i++;
+					songJson.gfVersion = songJson.player3;
+					if (Reflect.hasField(songJson, 'player3'))
+						Reflect.deleteField(songJson, 'player3');
 				}
-			}
-		}
 
-		var sectionsData:Array<SwagSection> = songJson.notes;
-		if (sectionsData == null)
-			return;
+				if (songJson.events == null)
+				{
+					songJson.events = [];
+					for (secNum in 0...songJson.notes.length)
+					{
+						var sec:SwagSection = songJson.notes[secNum];
 
-		for (section in sectionsData)
-		{
-			var beats:Null<Float> = cast section.sectionBeats;
-			if (beats == null || Math.isNaN(beats))
-			{
-				section.sectionBeats = 4;
-				if (Reflect.hasField(section, 'lengthInSteps'))
-					Reflect.deleteField(section, 'lengthInSteps');
-			}
+						var i:Int = 0;
+						var notes:Array<Dynamic> = sec.sectionNotes;
+						var len:Int = notes.length;
+						while (i < len)
+						{
+							var note:Array<Dynamic> = notes[i];
+							if (note[1] < 0)
+							{
+								songJson.events.push([note[0], [[note[2], note[3], note[4]]]]);
+								notes.remove(note);
+								len = notes.length;
+							}
+							else
+								i++;
+						}
+					}
+				}
 
-			for (note in section.sectionNotes)
-			{
-				var gottaHitNote:Bool = (note[1] < 4) ? section.mustHitSection : !section.mustHitSection;
-				note[1] = (note[1] % 4) + (gottaHitNote ? 0 : 4);
+				var sectionsData:Array<SwagSection> = songJson.notes;
+				if (sectionsData == null)
+					return;
 
-				if (!Std.isOfType(note[3], String))
-					note[3] = Note.defaultNoteTypes[note[3]]; // compatibility with Week 7 and 0.1-0.3 psych charts
-			}
+				for (section in sectionsData)
+				{
+					var beats:Null<Float> = cast section.sectionBeats;
+					if (beats == null || Math.isNaN(beats))
+					{
+						section.sectionBeats = 4;
+						if (Reflect.hasField(section, 'lengthInSteps'))
+							Reflect.deleteField(section, 'lengthInSteps');
+					}
+
+					for (note in section.sectionNotes)
+					{
+						var gottaHitNote:Bool = (note[1] < 4) ? section.mustHitSection : !section.mustHitSection;
+						note[1] = (note[1] % 4) + (gottaHitNote ? 0 : 4);
+
+						if (!Std.isOfType(note[3], String))
+							note[3] = Note.defaultNoteTypes[note[3]]; // compatibility with Week 7 and 0.1-0.3 psych charts
+					}
+				}
+			case 'psychness':
+				if (songJson.characters == null)
+				{
+					songJson.characters = [];
+					songJson.characters.push({
+						name: songJson.player1,
+						position: [0, 0],
+						strumPosition: [0, 0],
+						visible: true,
+						strumVisible: true,
+						noteVisible: true,
+						characterType: 'player',
+						index: 1
+					});
+					songJson.characters.push({
+						name: songJson.player2,
+						position: [0, 0],
+						strumPosition: [0, 0],
+						visible: true,
+						strumVisible: true,
+						noteVisible: true,
+						characterType: 'opponent',
+						index: 1
+					});
+					songJson.characters.push({
+						name: songJson.gfVersion == null || songJson.gfVersion.length < 1 ? 'gf' : songJson.gfVersion,
+						position: [0, 0],
+						strumPosition: [0, 0],
+						visible: true,
+						strumVisible: false,
+						noteVisible: false,
+						characterType: 'girlfriend',
+						index: 1
+					});
+
+					if (Reflect.hasField(songJson, 'player1'))
+						Reflect.deleteField(songJson, 'player1');
+					if (Reflect.hasField(songJson, 'player2'))
+						Reflect.deleteField(songJson, 'player2');
+					if (Reflect.hasField(songJson, 'gfVersion'))
+						Reflect.deleteField(songJson, 'gfVersion');
+				}
+
+				var sectionData:Array<SwagSection> = songJson.notes;
+				for (section in sectionData)
+				{
+					if (section.mustHitSection)
+						section.focusCharacter = 0;
+					else
+						section.focusCharacter = 1;
+					if (section.gfSection)
+						section.focusCharacter = 2;
+
+					if (Reflect.hasField(section, 'mustHitSection'))
+						Reflect.deleteField(section, 'mustHitSection');
+					if (Reflect.hasField(section, 'gfSection'))
+						Reflect.deleteField(section, 'gfSection');
+				}
 		}
 	}
 
@@ -231,9 +235,10 @@ class Song
 		#if MODS_ALLOWED
 		if (FileSystem.exists(_lastPath))
 			rawData = File.getContent(_lastPath);
-		else
+		#else
+		if (Assets.exists(_lastPath))
+			rawData = Assets.getText(_lastPath);
 		#end
-		rawData = Assets.getText(_lastPath);
 
 		return rawData != null ? parseJSON(rawData, jsonInput) : null;
 	}
@@ -261,14 +266,20 @@ class Song
 					{
 						trace('converting chart $nameForError with format $fmt to psych_v1 format...');
 						songJson.format = 'psych_v1_convert';
-						convert(songJson);
+						convert(songJson, convertTo);
 					}
 				case 'psychness':
 					if (!fmt.startsWith('psychness')) // Convert to Psychness format
 					{
+						if (!fmt.startsWith('psych_v1')) // Convert to Psych 1.0 format
+						{
+							trace('converting chart $nameForError with format $fmt to psych_v1 format...');
+							songJson.format = 'psych_v1_convert';
+							convert(songJson, convertTo);
+						}
 						trace('converting chart $nameForError with format $fmt to psychness format...');
 						songJson.format = 'psychness_convert';
-						convert(songJson);
+						convert(songJson, convertTo);
 					}
 			}
 		}

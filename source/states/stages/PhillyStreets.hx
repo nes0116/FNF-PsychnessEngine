@@ -390,7 +390,7 @@ class PhillyStreets extends BaseStage
 
 	function updateABotEye(finishInstantly:Bool = false)
 	{
-		if(PlayState.SONG.notes[Std.int(FlxMath.bound(curSection, 0, PlayState.SONG.notes.length - 1))].mustHitSection == true)
+		if(PlayState.SONG.characters[PlayState.SONG.notes[Std.int(FlxMath.bound(curSection, 0, PlayState.SONG.notes.length - 1))].focusCharacter].characterType == PLAYER)
 			abot.lookRight();
 		else
 			abot.lookLeft();

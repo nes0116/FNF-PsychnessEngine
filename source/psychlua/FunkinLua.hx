@@ -178,9 +178,9 @@ class FunkinLua {
 
 			set('inGameOver', GameOverSubstate.instance != null);
 			set('focusCharacter', curSection != null ? curSection.focusCharacter : 0);
-			set('mustHitSection', curSection != null ? (curSection.mustHitSection == true) : false);
+			set('mustHitSection', curSection != null ? (PlayState.SONG.characters[curSection.focusCharacter].characterType == PLAYER) : false);
 			set('altAnim', curSection != null ? (curSection.altAnim == true) : false);
-			set('gfSection', curSection != null ? (curSection.gfSection == true) : false);
+			set('gfSection', curSection != null ? (PlayState.SONG.characters[curSection.focusCharacter].characterType == GIRLFRIEND) : false);
 
 			set('healthGainMult', PlayState.instance.healthGain);
 			set('healthLossMult', PlayState.instance.healthLoss);

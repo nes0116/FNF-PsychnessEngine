@@ -1321,11 +1321,22 @@ class PlayState extends MusicBeatState
 
 		try
 		{
-			var eventsChart:SwagSong = Song.getChart('events', songName);
-			if(eventsChart != null)
-				for (event in eventsChart.events) //Event Notes
-					for (i in 0...event[1].length)
-						makeEvent(event, i);
+			var formattedFolder:String = Paths.formatToSongPath(songName);
+			var formattedSong:String = Paths.formatToSongPath('events');
+			var _lastPath:String = Paths.json('$formattedFolder/$formattedSong');
+			var eventFound:Bool = false;
+
+			if (FileSystem.exists(_lastPath))
+				eventFound = true;
+
+			if (eventFound)
+			{
+				var eventsChart:SwagSong = Song.getChart('events', songName);
+				if(eventsChart != null)
+					for (event in eventsChart.events) //Event Notes
+						for (i in 0...event[1].length)
+							makeEvent(event, i);
+			}
 		}
 		catch(e:Dynamic) {}
 
@@ -1582,7 +1593,7 @@ class PlayState extends MusicBeatState
 
 	private function startStrumsTween():Void
 	{
-		for (strum in playerStrums)
+		for (strum in strumLineNotes)
 		{
 			@:privateAccess
 			{
@@ -3259,9 +3270,9 @@ class PlayState extends MusicBeatState
 				setOnScripts('stepCrochet', Conductor.stepCrochet);
 			}
 			setOnScripts('focusCharacter', SONG.notes[curSection].focusCharacter);
-			setOnScripts('mustHitSection', SONG.notes[curSection].mustHitSection);
+			setOnScripts('mustHitSection', SONG.characters[SONG.notes[curSection].focusCharacter].characterType == PLAYER);
 			setOnScripts('altAnim', SONG.notes[curSection].altAnim);
-			setOnScripts('gfSection', SONG.notes[curSection].gfSection);
+			setOnScripts('gfSection', SONG.characters[SONG.notes[curSection].focusCharacter].characterType == GIRLFRIEND);
 		}
 		super.sectionHit();
 

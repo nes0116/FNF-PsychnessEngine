@@ -2807,13 +2807,13 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			var iconP1:HealthIcon = icons[0];
 			var iconP2:HealthIcon = icons[1];
 			var mustHitSection:Bool = (curSecData != null && curSecData.mustHitSection == true);
-			if (isGfSection)
-			{
-				if (mustHitSection)
-					iconP1.changeIcon('gf');
-				else
-					iconP2.changeIcon('gf');
-			}
+			// if (isGfSection)
+			// {
+			// 	if (mustHitSection)
+			// 		iconP1.changeIcon('gf');
+			// 	else
+			// 		iconP2.changeIcon('gf');
+			// }
 
 			// if (mustHitSection)
 			// 	mustHitIndicator.x = iconP1.x + iconP1.width / 2;
@@ -4437,7 +4437,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				upperBox.isMinimized = true;
 
 				updateChartData();
-				fileDialog.save('events.json', PsychJsonPrinter.print({events: PlayState.SONG.events, format: 'psych_v1'}, ['events']),
+				fileDialog.save('events.json', PsychJsonPrinter.print({events: PlayState.SONG.events, format: 'psychness'}, ['events']),
 					function() showOutput('Events saved successfully to: ${fileDialog.path}'), null, function() showOutput('Error on saving events!', true));
 			}, btnWid);
 			btn.description = 'Save Events...\n- Save only Events(events.json)';
@@ -5951,6 +5951,9 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				Reflect.deleteField(section, 'mustHitSection');
 			if (Reflect.hasField(section, 'gfSection'))
 				Reflect.deleteField(section, 'gfSection');
+
+			section.mustHitSection = (PlayState.SONG.characters[section.focusCharacter].characterType == PLAYER);
+			section.gfSection = (PlayState.SONG.characters[section.focusCharacter].characterType == GIRLFRIEND);
 		}
 
 		notes.sort(PlayState.sortByTime);
