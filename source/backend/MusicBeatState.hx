@@ -70,6 +70,7 @@ class MusicBeatState extends FlxState
 	public static function getVariables()
 		return getState().variables;
 
+	public var reloadingState:Bool = false;
 	override function create() {
 		instance = this;
 		// initScripts(null, "scripts/");

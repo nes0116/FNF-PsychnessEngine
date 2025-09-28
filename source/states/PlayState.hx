@@ -372,41 +372,6 @@ class PlayState extends MusicBeatState
 			case 'phillyBlazin': new PhillyBlazin();	//Weekend 1 - Blazin
 		}
 		if(isPixelStage) introSoundsSuffix = '-pixel';
-
-		if (!SONG.format.startsWith('psychness'))
-		{
-			SONG.characters = [];
-			SONG.characters.push({
-				name: SONG.player1,
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: true,
-				noteVisible: true,
-				characterType: 'player',
-				index: 1
-			});
-			SONG.characters.push({
-				name: SONG.player2,
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: true,
-				noteVisible: true,
-				characterType: 'opponent',
-				index: 1
-			});
-			SONG.characters.push({
-				name: SONG.gfVersion != null && SONG.gfVersion.length > 0 ? SONG.gfVersion : 'gf', //Fix for the Chart Editor
-				position: [0, 0],
-				strumPosition: [0, 0],
-				visible: true,
-				strumVisible: false,
-				noteVisible: false,
-				characterType: 'girlfriend',
-				index: 1
-			});
-		}
 		
 		for (char in SONG.characters)
 		{
@@ -1356,11 +1321,22 @@ class PlayState extends MusicBeatState
 
 		try
 		{
-			var eventsChart:SwagSong = Song.getChart('events', songName);
-			if(eventsChart != null)
-				for (event in eventsChart.events) //Event Notes
-					for (i in 0...event[1].length)
-						makeEvent(event, i);
+			var formattedFolder:String = Paths.formatToSongPath(songName);
+			var formattedSong:String = Paths.formatToSongPath('events');
+			var _lastPath:String = Paths.json('$formattedFolder/$formattedSong');
+			var eventFound:Bool = false;
+
+			if (FileSystem.exists(_lastPath))
+				eventFound = true;
+
+			if (eventFound)
+			{
+				var eventsChart:SwagSong = Song.getChart('events', songName);
+				if(eventsChart != null)
+					for (event in eventsChart.events) //Event Notes
+						for (i in 0...event[1].length)
+							makeEvent(event, i);
+			}
 		}
 		catch(e:Dynamic) {}
 
@@ -1508,20 +1484,6 @@ class PlayState extends MusicBeatState
 			for (i in 0...event[1].length)
 				makeEvent(event, i);
 
-		if (!songData.format.startsWith('psychness')) // Format for Psych Chart
-		{
-			for (section in sectionsData)
-			{
-				if (section.mustHitSection)
-					section.focusCharacter = 0;
-				else
-					section.focusCharacter = 1;
-				if (section.gfSection)
-						section.focusCharacter = 2;
-			}
-			trace('Formated Chart for Psychness Engine!');
-		}
-
 		unspawnNotes.sort(sortByTime);
 		generatedMusic = true;
 	}
@@ -1631,7 +1593,7 @@ class PlayState extends MusicBeatState
 
 	private function startStrumsTween():Void
 	{
-		for (strum in playerStrums)
+		for (strum in strumLineNotes)
 		{
 			@:privateAccess
 			{
@@ -3313,9 +3275,9 @@ class PlayState extends MusicBeatState
 				setOnScripts('stepCrochet', Conductor.stepCrochet);
 			}
 			setOnScripts('focusCharacter', SONG.notes[curSection].focusCharacter);
-			setOnScripts('mustHitSection', SONG.notes[curSection].mustHitSection);
+			setOnScripts('mustHitSection', SONG.characters[SONG.notes[curSection].focusCharacter].characterType == PLAYER);
 			setOnScripts('altAnim', SONG.notes[curSection].altAnim);
-			setOnScripts('gfSection', SONG.notes[curSection].gfSection);
+			setOnScripts('gfSection', SONG.characters[SONG.notes[curSection].focusCharacter].characterType == GIRLFRIEND);
 		}
 		super.sectionHit();
 
