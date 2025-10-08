@@ -410,7 +410,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 		addCharListTab();
 
-		mainBox = new PsychUIBox(mainBoxPosition.x, mainBoxPosition.y, 300, 287, ['Charting', 'Data', 'Events', 'Note', 'Section', 'Song']);
+		mainBox = new PsychUIBox(mainBoxPosition.x, mainBoxPosition.y, 300, 266, ['Charting', 'Data', 'Events', 'Note', 'Section', 'Song']);
 		mainBox.selectedName = 'Song';
 		mainBox.scrollFactor.set();
 		mainBox.cameras = [camUI];
@@ -2928,6 +2928,23 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 	var noteTextureInputText:PsychUIInputText;
 	var noteSplashesInputText:PsychUIInputText;
 
+	function jumpTime(time:Float)
+	{
+		var curTime:Float = Conductor.songPosition;
+		var currentSec:Int = curSec;
+			
+		curTime = time + 0.000001;
+		for (i => time in cachedSectionTimes)
+		{
+			if(time <= curTime)
+				currentSec = i;
+			else break;
+		}
+
+		curSec = currentSec;
+		FlxG.sound.music.time = vocals.time = FlxMath.bound(curTime, 0, FlxG.sound.music.length - 1);
+		loadSection();
+	}
 	function addDataTab()
 	{
 		var tab_group = mainBox.getTab('Data').menu;
@@ -3393,16 +3410,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			}
 		}
 
-		objY += 15;
-
-		focusCharDropDown = new PsychUIDropDownMenu(objX, objY, characterList, function(id:Int, character:String)
-		{
-			var sec = getCurChartSection();
-			if (sec != null)
-				sec.focusCharacter = focusCharDropDown.selectedIndex;
-			updateHeads(true);
-		});
-
 		mustHitCheckBox = new PsychUICheckBox(objX, objY, 'Must Hit Sec.', 70, function()
 		{
 			var sec = getCurChartSection();
@@ -3419,7 +3426,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			updateHeads(true);
 		});
 		gfSectionCheckBox.description = 'GF Section\n- Whether GF is the section that hits the notes';
-		altAnimSectionCheckBox = new PsychUICheckBox(objX + 200, objY, 'Alt Anim', 70, function()
+		altAnimSectionCheckBox = new PsychUICheckBox(objX + 100, objY, 'Alt Anim', 70, function()
 		{
 			var sec = getCurChartSection();
 			if (sec != null)
@@ -3427,7 +3434,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		});
 		altAnimSectionCheckBox.description = 'Alt Animation Section\n- Whether Opponent plays alt Sing Animation';
 
-		objY += 35;
 		changeBpmCheckBox = new PsychUICheckBox(objX, objY, 'Change BPM', 80, function()
 		{
 			var sec = getCurChartSection();
@@ -3458,7 +3464,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		};
 		changeBpmStepper.description = 'Next BPM\n- BPM from this section onwards';
 
-		beatsPerSecStepper = new PsychUINumericStepper(objX + 150, objY, 1, 4, 1, 16, 2);
+		objY -= 25;
+		beatsPerSecStepper = new PsychUINumericStepper(objX + 200, objY + 15, 1, 4, 1, 16, 2);
 		beatsPerSecStepper.onValueChange = function()
 		{
 			beatsPerSecStepper.value = Math.round(beatsPerSecStepper.value * 4) / 4;
@@ -3472,7 +3479,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		};
 		beatsPerSecStepper.description = 'Beats per Section\n- Number of beats per in this section\n- Default: 4';
 
-		objY += 40;
+		objY += 55;
 		var copyButton:PsychUIButton = new PsychUIButton(objX, objY, 'Copy Section', copyNotesOnSection.bind());
 		copyButton.description = 'Copy Section\n- Copy current section';
 		var pasteButton:PsychUIButton = new PsychUIButton(objX + 100, objY, 'Paste Section', function()
@@ -3601,11 +3608,20 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		});
 		mirrorNotesButton.description = 'Mirror Notes\n- Mirror the current section\n- Warning: If there is a note currently selected,\n   only that note will be mirrored';
 
+		objY += 50;
+		focusCharDropDown = new PsychUIDropDownMenu(objX, objY, characterList, function(id:Int, character:String)
+		{
+			var sec = getCurChartSection();
+			if (sec != null)
+				sec.focusCharacter = focusCharDropDown.selectedIndex;
+			updateHeads(true);
+		});
+
 		// tab_group.add(mustHitCheckBox);
 		// tab_group.add(gfSectionCheckBox);
 		tab_group.add(altAnimSectionCheckBox);
 
-		tab_group.add(new FlxText(beatsPerSecStepper.x, beatsPerSecStepper.y - 15, 100, 'Beats per Section:'));
+		tab_group.add(new FlxText(beatsPerSecStepper.x, beatsPerSecStepper.y - 15, 100, 'Beats per Sec:'));
 		tab_group.add(changeBpmCheckBox);
 		tab_group.add(changeBpmStepper);
 		tab_group.add(beatsPerSecStepper);
@@ -5940,12 +5956,15 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 		for (section in PlayState.SONG.notes)
 		{
-			if (section.mustHitSection)
-				section.focusCharacter = 0;
-			else
-				section.focusCharacter = 1;
-			if (section.gfSection)
-				section.focusCharacter = 2;
+			if (section.focusCharacter == 0)
+			{
+				if (section.mustHitSection)
+					section.focusCharacter = 0;
+				else
+					section.focusCharacter = 1;
+				if (section.gfSection)
+					section.focusCharacter = 2;
+			}
 			
 			if (Reflect.hasField(section, 'mustHitSection'))
 				Reflect.deleteField(section, 'mustHitSection');
