@@ -83,7 +83,7 @@ class Song
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 	public var gfVersion:String = 'gf';
-	public var format:String = 'psychness';
+	public var format:String = 'psychness_0.4.3';
 
 	public static function convert(songJson:Dynamic, format:String = 'psychness') // Convert old charts to psychness format
 	{

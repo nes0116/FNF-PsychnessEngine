@@ -703,7 +703,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			],
 
 			stage: 'stage',
-			format: 'psychness'
+			format: 'psychness_0.4.3'
 		};
 		Song.chartPath = null;
 		loadChart(song, null);
@@ -2932,19 +2932,21 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 	{
 		var curTime:Float = Conductor.songPosition;
 		var currentSec:Int = curSec;
-			
+
 		curTime = time + 0.000001;
 		for (i => time in cachedSectionTimes)
 		{
-			if(time <= curTime)
+			if (time <= curTime)
 				currentSec = i;
-			else break;
+			else
+				break;
 		}
 
 		curSec = currentSec;
 		FlxG.sound.music.time = vocals.time = FlxMath.bound(curTime, 0, FlxG.sound.music.length - 1);
 		loadSection();
 	}
+
 	function addDataTab()
 	{
 		var tab_group = mainBox.getTab('Data').menu;
@@ -4453,7 +4455,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				upperBox.isMinimized = true;
 
 				updateChartData();
-				fileDialog.save('events.json', PsychJsonPrinter.print({events: PlayState.SONG.events, format: 'psychness'}, ['events']),
+				fileDialog.save('events.json', PsychJsonPrinter.print({events: PlayState.SONG.events, format: 'psychness_0.4.3'}, ['events']),
 					function() showOutput('Events saved successfully to: ${fileDialog.path}'), null, function() showOutput('Error on saving events!', true));
 			}, btnWid);
 			btn.description = 'Save Events...\n- Save only Events(events.json)';
@@ -5945,8 +5947,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		for (secNum => section in PlayState.SONG.notes)
 			PlayState.SONG.notes[secNum].sectionNotes = [];
 
-		PlayState.SONG.format = 'psychness';
-
 		if (Reflect.hasField(PlayState.SONG, 'player1'))
 			Reflect.deleteField(PlayState.SONG, 'player1');
 		if (Reflect.hasField(PlayState.SONG, 'player2'))
@@ -5954,9 +5954,10 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		if (Reflect.hasField(PlayState.SONG, 'gfVersion'))
 			Reflect.deleteField(PlayState.SONG, 'gfVersion');
 
+		
 		for (section in PlayState.SONG.notes)
 		{
-			if (section.focusCharacter == 0)
+			if (PlayState.SONG.format != 'psychness_0.4.3' && PlayState.SONG.format != 'psychness_convert')
 			{
 				if (section.mustHitSection)
 					section.focusCharacter = 0;
@@ -5965,7 +5966,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				if (section.gfSection)
 					section.focusCharacter = 2;
 			}
-			
+		
 			if (Reflect.hasField(section, 'mustHitSection'))
 				Reflect.deleteField(section, 'mustHitSection');
 			if (Reflect.hasField(section, 'gfSection'))
@@ -5974,6 +5975,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			section.mustHitSection = (PlayState.SONG.characters[section.focusCharacter].characterType == PLAYER);
 			section.gfSection = (PlayState.SONG.characters[section.focusCharacter].characterType == GIRLFRIEND);
 		}
+
+		PlayState.SONG.format = 'psychness_0.4.3';
 
 		notes.sort(PlayState.sortByTime);
 		var noteSec:Int = 0;
