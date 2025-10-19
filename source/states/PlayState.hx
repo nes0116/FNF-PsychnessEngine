@@ -138,9 +138,15 @@ class PlayState extends MusicBeatState
 	public var opponents:Array<Character> = [];
 	public var players:Array<Character> = [];
 	public var girlfriends:Array<Character> = [];
-	public var dad:Character = null;
-	public var gf:Character = null;
-	public var boyfriend:Character = null;
+	public var dad(get, never):Character;
+	function get_dad():Character
+		return opponents[0];
+	public var gf(get, never):Character;
+	function get_gf():Character
+		return girlfriends[0];
+	public var boyfriend(get, never):Character;
+	function get_boyfriend():Character
+		return players[0];
 
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
@@ -397,28 +403,18 @@ class PlayState extends MusicBeatState
 			var array:Array<Character>;
 			switch (char.characterType)
 			{
-				case OPPONENT:
-					if (dad == null)
-						dad = character;
-					group = dadGroup;
-					map = dadMap;
-					array = opponents;
-				case PLAYER:
-					if (boyfriend == null)
-						boyfriend = character;
-					group = boyfriendGroup;
-					map = boyfriendMap;
-					array = players;
-				case GIRLFRIEND:
-					if (gf == null)
-						gf = character;
-					group = gfGroup;
-					map = gfMap;
-					array = girlfriends;
 				default:
 					group = dadGroup;
 					map = dadMap;
 					array = opponents;
+				case PLAYER:
+					group = boyfriendGroup;
+					map = boyfriendMap;
+					array = players;
+				case GIRLFRIEND:
+					group = gfGroup;
+					map = gfMap;
+					array = girlfriends;
 			}
 			group.add(character);
 			map.set(character.curCharacter, character);
