@@ -12,6 +12,10 @@ class InitState extends MusicBeatState
 		Language.reloadPhrases();
 		MusicBeatState.resetStateMap();
 
+		FlxG.console.registerClass(backend.CoolUtil);
+
+		FlxG.console.registerClass(states.PlayState);
+
 		if (FlxG.save.data != null && FlxG.save.data.fullscreen)
 		{
 			FlxG.fullscreen = FlxG.save.data.fullscreen;

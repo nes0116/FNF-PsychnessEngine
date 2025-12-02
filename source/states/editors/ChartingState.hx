@@ -259,10 +259,13 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 	var selectionBox:FlxSprite;
 
 	var _startIndex:Int = 0;
+	var _startUpError:String;
 
-	public function new(?startIndex:Int = 0)
+	public function new(?startIndex:Int = 0, ?startUpError:String = null)
 	{
 		this._startIndex = startIndex;
+		if (startUpError != null)
+			this._startUpError = startUpError;
 		super();
 	}
 
@@ -279,7 +282,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 	var tipBg:FlxSprite;
 	var fullTipText:FlxText;
 
-	var nearestList:Array<String> = [];
+	var nearestList:Array<Array<String>> = [];
 
 	var vortexEnabled:Bool = false;
 	var waveformEnabled:Bool = false;
@@ -327,6 +330,24 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 		if (chartEditorSave.data.nearestList != null)
 			nearestList = chartEditorSave.data.nearestList;
+		var fixed:Array<Array<String>> = [];
+		for (item in nearestList)
+		{
+			if (Std.isOfType(item, Array))
+			{
+				fixed.push([item[0], item[1]]);
+			}
+			else if (Std.isOfType(item, String))
+			{
+				var s:String = cast item;
+				fixed.push([s, null]);
+			}
+			else
+			{
+				trace("Unknown type in nearestList: " + item);
+			}
+		}
+		nearestList = fixed;
 
 		if (chartEditorSave.data.autoSave != null)
 			autoSaveCap = chartEditorSave.data.autoSave;
@@ -570,6 +591,9 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 		descriptionGroup.camera = camUI;
 		add(descriptionGroup);
+
+		if (_startUpError != null)
+			showOutput(_startUpError, true);
 
 		Main.onClose = function()
 		{
@@ -2180,7 +2204,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		StageData.loadDirectory(PlayState.SONG);
 		Conductor.bpm = PlayState.SONG.bpm;
 		if (path != null)
-			pushToNearestList(path);
+			pushToNearestList([path, Mods.currentModDirectory]);
 	}
 
 	function reloadCharacterList()
@@ -2541,7 +2565,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			var rowRound:Int = Math.round(4 * sectionBeats);
 			var timeAdd:Float = beat * (rowRound / 4);
 			var mustHitSec:Bool = lastSection != null ? lastSection.mustHitSection : true;
-			var forcusChar:Int = lastSection != null ? lastSection.focusCharacter : focusCharDropDown.selectedIndex;
+			var forcusChar:Int = lastSection != null ? lastSection.focusCharacter : 0;
 			var changeBpmSec:Bool = lastSection != null ? lastSection.changeBPM : false;
 			var altAnimSec:Bool = lastSection != null ? lastSection.altAnim : false;
 			var gfSec:Bool = lastSection != null ? lastSection.gfSection : false;
@@ -4099,7 +4123,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				btn.y = startText.y + startText.height + 10;
 				state.add(btn);
 
-				var nearestText:FlxText = new FlxText(0, 0, 240, 'Nearest', 16);
+				var nearestText:FlxText = new FlxText(0, 0, 240, 'Recent', 16);
 				nearestText.alignment = CENTER;
 				nearestText.cameras = state.cameras;
 				nearestText.x = state.bg.x + state.bg.width - startText.width - 45;
@@ -4112,7 +4136,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				nearestBG.y = 357;
 				state.add(nearestBG);
 
-				var realNearestList:Array<String> = nearestList.copy();
+				var b:Int = 0;
+				var realNearestList:Array<Array<String>> = nearestList.copy();
 				realNearestList.reverse();
 				for (i in 0...5)
 				{
@@ -4120,9 +4145,10 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 					{
 						var text:FlxText = new FlxText(0, 0, 240, '', 8);
 						text.alignment = LEFT;
-						var jsonName:String = (realNearestList[i].substr(realNearestList[i].lastIndexOf('/')).trim()).substr(1);
-						text.applyMarkup('{json}${jsonName}{json} - ${realNearestList[i].substr(0, 38 - (jsonName.length + 3))}...', [
-							new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF1F88D9, false, false), "{json}")
+						var name:String = realNearestList[i][0];
+						var jsonName:String = (name.substr(name.lastIndexOf('/')).trim()).substr(1);
+						text.applyMarkup('{json}${jsonName}{json} - ${name.substr(0, 38 - (jsonName.length + 3))}...', [
+							new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF0097FF, false, false), "{json}")
 						]);
 						text.cameras = state.cameras;
 						text.x = state.bg.x + state.bg.width - text.width - 32;
@@ -4135,7 +4161,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 							try
 							{
 								state.close();
-								var path:String = realNearestList[i];
+								var path:String = realNearestList[i][0];
 								_loadChart(File.getContent(path), path);
 							}
 							catch (e:Exception)
@@ -4151,6 +4177,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 						{
 							text.alpha = 0.85;
 						}, false, true, false);
+						b++;
 					}
 				}
 
@@ -4164,7 +4191,11 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 				flixel.input.mouse.FlxMouseEvent.add(text, spr ->
 				{
-					var radioNearestList:Array<String> = realNearestList.copy();
+					if (b == 0)
+						return;
+					var radioNearestList:Array<String> = [];
+					for (data in realNearestList)
+						radioNearestList.push(data[0]);
 					for (i in 0...radioNearestList.length)
 					{
 						var jsonName:String = (radioNearestList[i].substr(radioNearestList[i].lastIndexOf('/')).trim()).substr(1);
@@ -4172,6 +4203,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 					}
 
 					var maxItems:Int = Std.int(Math.min(5, radioNearestList.length));
+					var array:Array<String> = [];
 					var radioGrp:PsychUIRadioGroup = new PsychUIRadioGroup(0, 0, radioNearestList, 25, maxItems, false, 240);
 					radioGrp.checked = 0;
 
@@ -4195,7 +4227,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 							try
 							{
 								state.close();
-								var path:String = realNearestList[radioGrp.curScroll + radioGrp.checked];
+								var path:String = realNearestList[radioGrp.curScroll + radioGrp.checked][0];
 								_loadChart(File.getContent(path), path);
 							}
 							catch (e:Exception)
@@ -5954,7 +5986,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		if (Reflect.hasField(PlayState.SONG, 'gfVersion'))
 			Reflect.deleteField(PlayState.SONG, 'gfVersion');
 
-		
 		for (section in PlayState.SONG.notes)
 		{
 			if (PlayState.SONG.format != 'psychness_0.4.3' && PlayState.SONG.format != 'psychness_convert')
@@ -5966,7 +5997,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				if (section.gfSection)
 					section.focusCharacter = 2;
 			}
-		
+
 			if (Reflect.hasField(section, 'mustHitSection'))
 				Reflect.deleteField(section, 'mustHitSection');
 			if (Reflect.hasField(section, 'gfSection'))
@@ -6013,7 +6044,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		var chartData:String = PsychJsonPrinter.print(PlayState.SONG, ['sectionNotes', 'events']);
 		if (canQuickSave && Song.chartPath != null)
 		{
-			pushToNearestList(Song.chartPath);
+			pushToNearestList([Song.chartPath, Mods.currentModDirectory]);
 			File.saveContent(Song.chartPath, chartData);
 			showOutput('Chart saved successfully to: ${Song.chartPath}');
 		}
@@ -6027,7 +6058,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			{
 				var newPath:String = fileDialog.path;
 				Song.chartPath = newPath.replace('\\', '/');
-				pushToNearestList(newPath);
+				pushToNearestList([newPath, Mods.currentModDirectory]);
 				reloadNotesDropdowns();
 				showOutput('Chart saved successfully to: $newPath');
 			}, function()
@@ -6041,14 +6072,60 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		}
 	}
 
-	function pushToNearestList(path:String)
+	function pushToNearestList(path:Array<String>)
 	{
-		var path:String = path.replace('\\', '/');
-		if (nearestList.contains(path))
-			nearestList.remove(nearestList[nearestList.indexOf(path)]);
+		var path:Array<String> = [path[0].replace('\\', '/'), path[1]];
+		for (i => item in nearestList)
+		{
+			if (item[0] == path[0])
+			{
+				nearestList.remove(nearestList[i]);
+			}
+		}
 		nearestList.push(path);
 		chartEditorSave.data.nearestList = nearestList;
 		chartEditorSave.flush();
+
+		#if windows
+		var categories:Array<
+			{
+				name:String,
+				buttons:Array<
+					{
+						exePath:String,
+						arguments:String,
+						title:String,
+						description:String
+					}>
+			}> = [];
+		var nearestList:Array<Dynamic> = cast chartEditorSave.data.nearestList;
+		var nearestChartList:Array<
+			{
+				exePath:String,
+				arguments:String,
+				title:String,
+				description:String
+			}> = [];
+		for (data in nearestList)
+		{
+			var parts = data[0].split("/");
+			var fileName = parts[parts.length - 1];
+			nearestChartList.push({exePath: '${Sys.programPath()}',
+				arguments: "--cwd=\""
+				+ Sys.getCwd()
+				+ "\" --chart=\""
+				+ data[0]
+				+ "\" --modDirectory=\""
+				+ data[1]
+				+ "\"",
+				title: fileName,
+				description: data[0]
+			});
+		}
+		categories.push({name: "Recently edited charts", buttons: nearestChartList});
+		categories.push({name: "Tasks", buttons: [{exePath: '${Sys.programPath()}', arguments: "--cwd=\"" + Sys.getCwd() + "\"" + " --newChart=true", title: "New Chart", description: null}]});
+		CoolUtil.addJumpListCategories(categories);
+		#end
 	}
 
 	inline function getCurChartSection()

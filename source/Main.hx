@@ -3,10 +3,8 @@ package;
 #if android
 import android.content.Context;
 #end
-
 import debug.DebugDisplay;
 import debug.FPSCounter;
-
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -18,27 +16,22 @@ import openfl.events.Event;
 import openfl.display.StageScaleMode;
 import lime.app.Application;
 import states.TitleState;
-
 #if HSCRIPT_ALLOWED
 import crowplexus.iris.Iris;
 import psychlua.HScript.HScriptInfos;
 #end
-
 #if linux
 import lime.graphics.Image;
 #end
-
 #if desktop
 import backend.ALSoftConfig; // Just to make sure DCE doesn't remove this, since it's not directly referenced anywhere else.
 #end
-
-//crash handler stuff
+// crash handler stuff
 #if CRASH_HANDLER
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
 #end
-
 import backend.Highscore;
 
 // NATIVE API STUFF, YOU CAN IGNORE THIS AND SCROLL //
@@ -74,17 +67,62 @@ class Main extends Sprite
 
 	public static var fpsVar:DebugDisplay;
 
+	public static var openNewChart:Bool = false;
+	public static var loadChartPath:Array<String>;
+
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function main():Void
 	{
+		var argsMap = parseArgs();
+		for (key in argsMap.keys())
+			trace(key + " => " + argsMap.get(key));
+		if (argsMap.exists("cwd"))
+			Sys.setCwd(argsMap.get('cwd'));
+		if (argsMap.exists("chart"))
+			loadChartPath = [argsMap.get('chart'), argsMap.get('modDirectory')];
+		if (argsMap.exists("newChart"))
+			openNewChart = argsMap.get('newChart');
+
 		Lib.current.addChild(new Main());
+	}
+
+	/**
+		Converts application arguments to a Map<String, Dynamic>.
+	**/
+	public static function parseArgs():Map<String, Dynamic>
+	{
+		var map = new Map<String, Dynamic>();
+		for (arg in Sys.args())
+		{
+			if (arg.startsWith("--"))
+			{
+				var parts = arg.substr(2).split("=");
+				var key = parts[0];
+				var value:Dynamic = true;
+
+				if (parts.length > 1)
+				{
+					var strVal = parts[1];
+					if (strVal == "true")
+						value = true;
+					else if (strVal == "false")
+						value = false;
+					else
+						value = strVal;
+				}
+
+				map.set(key, value);
+			}
+		}
+		return map;
 	}
 
 	/**
 		When the game is closed.
 	**/
 	public static var onClose:Void->Void;
+
 	/**
 		When a file is dropped into the game.
 	**/
@@ -95,7 +133,7 @@ class Main extends Sprite
 		super();
 
 		#if windows
-		// DPI Scaling fix for windows 
+		// DPI Scaling fix for windows
 		// this shouldn't be needed for other systems
 		// Credit to YoshiCrafter29 for finding this function
 		untyped __cpp__("SetProcessDPIAware();");
@@ -108,7 +146,7 @@ class Main extends Sprite
 		Sys.setCwd(lime.system.System.applicationStorageDirectory);
 		#end
 		#if VIDEOS_ALLOWED
-		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0")  ['--no-lua'] #end);
+		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0") ['--no-lua'] #end);
 		#end
 
 		#if LUA_ALLOWED
@@ -120,52 +158,64 @@ class Main extends Sprite
 		Highscore.load();
 
 		#if HSCRIPT_ALLOWED
-		Iris.warn = function(x, ?pos:haxe.PosInfos) {
+		Iris.warn = function(x, ?pos:haxe.PosInfos)
+		{
 			Iris.logLevel(WARN, x, pos);
 			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null) newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
 			#if LUA_ALLOWED
-			if (newPos.isLua == true) {
+			if (newPos.isLua == true)
+			{
 				msgInfo += 'HScript:';
 				newPos.showLine = false;
 			}
 			#end
-			if (newPos.showLine == true) {
+			if (newPos.showLine == true)
+			{
 				msgInfo += '${newPos.lineNumber}:';
 			}
 			msgInfo += ' $x';
 			MusicBeatState.instance.addTextToDebug('WARNING: $msgInfo', FlxColor.YELLOW);
 		}
-		Iris.error = function(x, ?pos:haxe.PosInfos) {
+		Iris.error = function(x, ?pos:haxe.PosInfos)
+		{
 			Iris.logLevel(ERROR, x, pos);
 			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null) newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
 			#if LUA_ALLOWED
-			if (newPos.isLua == true) {
+			if (newPos.isLua == true)
+			{
 				msgInfo += 'HScript:';
 				newPos.showLine = false;
 			}
 			#end
-			if (newPos.showLine == true) {
+			if (newPos.showLine == true)
+			{
 				msgInfo += '${newPos.lineNumber}:';
 			}
 			msgInfo += ' $x';
 			MusicBeatState.instance.addTextToDebug('ERROR: $msgInfo', FlxColor.RED);
 		}
-		Iris.fatal = function(x, ?pos:haxe.PosInfos) {
+		Iris.fatal = function(x, ?pos:haxe.PosInfos)
+		{
 			Iris.logLevel(FATAL, x, pos);
 			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null) newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
 			#if LUA_ALLOWED
-			if (newPos.isLua == true) {
+			if (newPos.isLua == true)
+			{
 				msgInfo += 'HScript:';
 				newPos.showLine = false;
 			}
 			#end
-			if (newPos.showLine == true) {
+			if (newPos.showLine == true)
+			{
 				msgInfo += '${newPos.lineNumber}:';
 			}
 			msgInfo += ' $x';
@@ -184,7 +234,8 @@ class Main extends Sprite
 		addChild(fpsVar);
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-		if(fpsVar != null) {
+		if (fpsVar != null)
+		{
 			fpsVar.visible = ClientPrefs.data.showFPS;
 		}
 		#end
@@ -202,7 +253,7 @@ class Main extends Sprite
 		FlxG.fixedTimestep = false;
 		FlxG.game.focusLostFramerate = 60;
 		FlxG.keys.preventDefaultKeys = [TAB];
-		
+
 		#if CRASH_HANDLER
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
@@ -211,32 +262,38 @@ class Main extends Sprite
 		DiscordClient.prepare();
 		#end
 
-		Lib.application.window.onClose.add(function() {
+		Lib.application.window.onClose.add(function()
+		{
 			if (onClose != null)
 				onClose();
 		});
-		Lib.application.window.onDropFile.add(function(filePath:String) {
+		Lib.application.window.onDropFile.add(function(filePath:String)
+		{
 			if (onDropFile != null)
 				onDropFile(filePath);
 		});
 
 		// shader coords fix
-		FlxG.signals.gameResized.add(function (w, h) {
-		     if (FlxG.cameras != null) {
-			   for (cam in FlxG.cameras.list) {
-				if (cam != null && cam.filters != null)
-					resetSpriteCache(cam.flashSprite);
-			   }
+		FlxG.signals.gameResized.add(function(w, h)
+		{
+			if (FlxG.cameras != null)
+			{
+				for (cam in FlxG.cameras.list)
+				{
+					if (cam != null && cam.filters != null)
+						resetSpriteCache(cam.flashSprite);
+				}
 			}
 
 			if (FlxG.game != null)
-			resetSpriteCache(FlxG.game);
+				resetSpriteCache(FlxG.game);
 		});
 	}
 
-	static function resetSpriteCache(sprite:Sprite):Void {
+	static function resetSpriteCache(sprite:Sprite):Void
+	{
 		@:privateAccess {
-		        sprite.__cacheBitmap = null;
+			sprite.__cacheBitmap = null;
 			sprite.__cacheBitmapData = null;
 		}
 	}

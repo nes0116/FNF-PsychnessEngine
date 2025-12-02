@@ -1969,7 +1969,6 @@ class FunkinLua {
 		if(PlayState.instance == null) return null;
 
 		var strumNote:StrumNote = PlayState.instance.strumLineNotes.members[note];
-		trace(strumNote, note);
 		if(strumNote == null) return null;
 
 		if(tag != null)

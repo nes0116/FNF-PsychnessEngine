@@ -137,10 +137,35 @@ class PlayState extends MusicBeatState
 	public var characters:Array<Character> = [];
 	public var opponents:Array<Character> = [];
 	public var players:Array<Character> = [];
-	public var girlfriends:Array<Character> = [];
-	public var dad:Character = null;
-	public var gf:Character = null;
-	public var boyfriend:Character = null;
+	public var girlfriends:Array<Character> = []; // huh?
+	public var dad(default, set):Character = null;
+	public var gf(default, set):Character = null;
+	public var boyfriend(default, set):Character = null;
+
+	function set_dad(c):Character
+	{
+		if (characters[characters.indexOf(dad)] != null)
+			characters[characters.indexOf(dad)] = c;
+		if (opponents[0] != null)
+			opponents[0] = c;
+		return dad = c;
+	}
+	function set_gf(c):Character
+	{
+		if (characters[characters.indexOf(gf)] != null)
+			characters[characters.indexOf(gf)] = c;
+		if (girlfriends[0] != null)
+			girlfriends[0] = c;
+		return gf = c;
+	}
+	function set_boyfriend(c):Character
+	{
+		if (characters[characters.indexOf(boyfriend)] != null)
+			characters[characters.indexOf(boyfriend)] = c;
+		if (players[0] != null)
+			players[0] = c;
+		return boyfriend = c;
+	}
 
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
@@ -699,6 +724,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public function addCharacterToList(newCharacter:String, type:Int, ?oldCharacter:Character) {
+		// trace(newCharacter, type, oldCharacter.curCharacter);
 		switch(type) {
 			case 0:
 				if(!boyfriendMap.exists(newCharacter)) {
@@ -728,7 +754,6 @@ class PlayState extends MusicBeatState
 					if (oldCharacter != null) newGf.charIndex = oldCharacter.charIndex;
 					newGf.scrollFactor.set(0.95, 0.95);
 					gfMap.set(newCharacter, newGf);
-					trace(gfMap.get(newCharacter));
 					gfGroup.add(newGf);
 					startCharacterPos(newGf);
 					newGf.alpha = 0.00001;
@@ -2192,7 +2217,6 @@ class PlayState extends MusicBeatState
 
 
 			case 'Change Character':
-				// 吐き気がするコード
 				var data = CoolUtil.getCharacterDataFromString(value1);
 				var character:Character = data.character;
 				var charType:Int = data.charType;
@@ -2201,43 +2225,109 @@ class PlayState extends MusicBeatState
 				var icon:HealthIcon = data.icon;
 				var scriptShit:String = data.scriptShit;
 
-				function updateData() {
-					data = CoolUtil.getCharacterDataFromString(value1);
-					character = data.character;
-					charType = data.charType;
-					map = data.map;
-					array = data.array;
-					icon = data.icon;
-					scriptShit = data.scriptShit;
-				}
+				var formatedCharNames:Array<String> = [];
+				for (i in 0...characters.length)
+					formatedCharNames.push(characters[i].curCharacter + "#" + characters[i].charIndex);
 
-				if(!map.exists(value2)) {
-					addCharacterToList(value2, charType, character);
-				}
+				if (!formatedCharNames.contains(value1))
+				{
+					var char:Character = boyfriend;
+					switch (charType)
+					{
+						case 0: char = boyfriend;
+						case 1: char = dad;
+						case 2: char = gf;
+					}
 
-				var wasGf:Bool = character.curCharacter.startsWith('gf-') || character.curCharacter == 'gf';
-				var lastAlpha:Float = character.alpha;
-				character.alpha = 0.00001;
-				characters[characters.indexOf(character)] = map.get(value2);
-				array[array.indexOf(character)] = map.get(value2);
-				map.get(value2).charIndex = character.charIndex;
-				updateData();
-				gf = map.get(value2);
-				updateData();
-				gf.alpha = lastAlpha;
-				var shouldChangeIcon:Bool = array.indexOf(character) == 0;
-				if (charType == 1) {
-					if(!character.curCharacter.startsWith('gf-') && character.curCharacter != 'gf') {
-						if(wasGf && gf != null) {
-							gf.visible = true;
+					if (!map.exists(value2))
+						addCharacterToList(value2, charType);
+
+					var lastAlpha = char.alpha;
+					char.alpha = 0.00001;
+
+					var newC:Character = map.get(value2);
+					newC.alpha = lastAlpha;
+					newC.charIndex = char.charIndex;
+
+					if (char == boyfriend)
+					{
+						boyfriend = newC;
+						iconP1.changeIcon(newC.healthIcon);
+					}
+					else if (char == dad)
+					{
+						var wasGf:Bool = dad.curCharacter.startsWith('gf-') || dad.curCharacter == 'gf';
+
+						if (!dad.curCharacter.startsWith('gf-') && dad.curCharacter != 'gf')
+						{
+							if (wasGf && gf != null)
+								gf.visible = true;
 						}
-					} else if(gf != null) {
-						gf.visible = false;
+						else if (gf != null)
+						{
+							gf.visible = false;
+						}
+
+						dad = newC;
+						iconP2.changeIcon(newC.healthIcon);
+					}
+					else if (char == gf)
+					{
+						gf = newC;
+					}
+
+					switch (charType)
+					{
+						case 0: players[players.indexOf(char)] = newC;
+						case 1: opponents[opponents.indexOf(char)] = newC;
+						case 2: girlfriends[girlfriends.indexOf(char)] = newC;
 					}
 				}
+				else
+				{
+					for (i in 0...characters.length)
+					{
+						var c = characters[i];
+						var nFormated = '${c.curCharacter}#${c.charIndex}';
 
-				if (icon != null && shouldChangeIcon)
-					icon.changeIcon(character.healthIcon);
+						if (nFormated == value1)
+						{
+							if (!map.exists(value2))
+								addCharacterToList(value2, charType);
+
+							var lastAlpha = c.alpha;
+							c.alpha = 0.00001;
+
+							var newC:Character = map.get(value2);
+							newC.alpha = lastAlpha;
+							newC.charIndex = c.charIndex;
+
+							if (c == boyfriend)
+							{
+								boyfriend = newC;
+								iconP1.changeIcon(newC.healthIcon);
+							}
+							else if (c == dad)
+							{
+								dad = newC;
+								iconP2.changeIcon(newC.healthIcon);
+							}
+							else if (c == gf)
+							{
+								gf = newC;
+							}
+
+							switch (charType)
+							{
+								case 0: players[players.indexOf(c)] = newC;
+								case 1: opponents[opponents.indexOf(c)] = newC;
+								case 2: girlfriends[girlfriends.indexOf(c)] = newC;
+							}
+
+							characters[i] = newC;
+						}
+					}
+				}
 
 				setOnScripts(scriptShit, character.curCharacter);
 				reloadHealthBarColors();
