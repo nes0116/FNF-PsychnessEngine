@@ -67,6 +67,8 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 
 	override function create()
 	{
+		FlxTransitionableState.skipNextTransOut = true;
+
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
@@ -1091,7 +1093,8 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 			{
 				if(!unsavedProgress)
 				{
-					MusicBeatState.switchState(new MainMenuState());
+					FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
+					MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 					FlxG.sound.playMusic(Paths.music(MainMenuState.menuSong));
 				}
 				else openSubState(new ExitConfirmationPrompt());
@@ -1099,6 +1102,7 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 			else
 			{
 				FlxG.mouse.visible = false;
+				FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
 				MusicBeatState.switchState(new PlayState());
 			}
 			return;

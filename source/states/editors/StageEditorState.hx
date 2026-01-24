@@ -64,6 +64,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 	var selectionSprites:FlxSpriteGroup = new FlxSpriteGroup();
 	override function create()
 	{
+		FlxTransitionableState.skipNextTransOut = true;
+
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
@@ -1351,7 +1353,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		{
 			if(!unsavedProgress)
 			{
-				MusicBeatState.switchState(new MainMenuState());
+				FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
+				MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 				FlxG.sound.playMusic(Paths.music(MainMenuState.menuSong));
 			}
 			else openSubState(new ExitConfirmationPrompt());

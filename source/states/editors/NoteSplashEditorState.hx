@@ -32,6 +32,8 @@ class NoteSplashEditorState extends MusicBeatState
 
     override function create()
     {
+		FlxTransitionableState.skipNextTransOut = true;
+
         if (imageSkin == null)
             imageSkin =  NoteSplash.defaultNoteSplash + NoteSplash.getSplashSkinPostfix();
 
@@ -591,7 +593,10 @@ class NoteSplashEditorState extends MusicBeatState
         if (!blockInput)
         {
             if (controls.BACK)
-				MusicBeatState.switchState(new MainMenuState());
+            {
+                FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
+				MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
+            }
             if (FlxG.keys.justPressed.F1)
                 openSubState(new NoteSplashEditorHelpSubState());
         }

@@ -274,6 +274,8 @@ class PlayState extends MusicBeatState
 	public static var nextReloadAll:Bool = false;
 	override public function create()
 	{
+		FlxTransitionableState.skipNextTransOut = true;
+
 		//trace('Playback Rate: ' + playbackRate);
 		_lastLoadedModDirectory = Mods.currentModDirectory;
 		Paths.clearStoredMemory();
@@ -2022,6 +2024,7 @@ class PlayState extends MusicBeatState
 		DiscordClient.resetClientID();
 		#end
 
+		FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
 		MusicBeatState.switchState(new ChartingState(FlxG.keys.pressed.SHIFT ? 2 : 1));
 	}
 

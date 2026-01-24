@@ -26,6 +26,7 @@ class DialogueEditorState extends MusicBeatState implements PsychUIEventHandler.
 	var unsavedProgress:Bool = false;
 
 	override function create() {
+		FlxTransitionableState.skipNextTransOut = true;
 		persistentUpdate = persistentDraw = true;
 		FlxG.camera.bgColor = FlxColor.fromHSL(0, 0, 0.5);
 
@@ -314,6 +315,7 @@ class DialogueEditorState extends MusicBeatState implements PsychUIEventHandler.
 			if(FlxG.keys.justPressed.ESCAPE) {
 				if(!unsavedProgress)
 				{
+					FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
 					MusicBeatState.switchState(new MainMenuState());
 					FlxG.sound.playMusic(Paths.music(MainMenuState.menuSong));
 					transitioning = true;

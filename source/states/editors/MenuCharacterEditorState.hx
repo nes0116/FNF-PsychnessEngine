@@ -20,6 +20,8 @@ class MenuCharacterEditorState extends MusicBeatState implements PsychUIEventHan
 	var unsavedProgress:Bool = false;
 
 	override function create() {
+		FlxTransitionableState.skipNextTransOut = true;
+
 		characterFile =
 		{
 			image: 'Menu_Dad',
@@ -215,7 +217,8 @@ class MenuCharacterEditorState extends MusicBeatState implements PsychUIEventHan
 			if(FlxG.keys.justPressed.ESCAPE) {
 				if(!unsavedProgress)
 				{
-					MusicBeatState.switchState(new MainMenuState());
+					FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
+					MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 					FlxG.sound.playMusic(Paths.music(MainMenuState.menuSong));
 				}
 				else openSubState(new ExitConfirmationPrompt());

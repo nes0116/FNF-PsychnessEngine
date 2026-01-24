@@ -292,6 +292,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 	{
 		instance = this;
 
+		FlxTransitionableState.skipNextTransOut = true;
+
 		if (Difficulty.list.length < 1)
 			Difficulty.resetList();
 		_keysPressedBuffer.resize(keysArray.length);
@@ -4983,7 +4985,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			displayUnsavedWarningPrompt(function()
 			{
 				PlayState.chartingMode = false;
-				MusicBeatState.switchState(new MainMenuState());
+				FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
+				MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 				FlxG.sound.playMusic(Paths.music(MainMenuState.menuSong));
 				FlxG.mouse.visible = false;
 			});
@@ -6443,6 +6446,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		setSongPlaying(false);
 		updateChartData();
 		StageData.loadDirectory(PlayState.SONG);
+		FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
 		LoadingState.loadAndSwitchState(new PlayState());
 		ClientPrefs.toggleVolumeKeys(true);
 	}
