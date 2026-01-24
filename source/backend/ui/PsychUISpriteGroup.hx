@@ -37,8 +37,8 @@ class PsychUISpriteGroup extends FlxSpriteGroup
 
 			if (!descriptionBox.visible)
 			{
-				descriptionBox.x = FlxG.stage.mouseX + 15;
-				descriptionBox.y = FlxG.stage.mouseY + 15;
+				descriptionBox.x = FlxG.mouse.screenX < FlxG.width / 2 ? FlxG.mouse.screenX + 15 : FlxG.mouse.screenX - descriptionBox.width - 15;
+				descriptionBox.y = FlxG.mouse.screenY + 15;
 			}
 
 			descriptionBox.visible = true;

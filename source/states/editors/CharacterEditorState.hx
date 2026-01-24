@@ -540,7 +540,7 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 			}
 
 			var lastAnim:String = (character.animationsArray[curAnim] != null) ? character.animationsArray[curAnim].anim : '';
-			var lastOffsets:Array<Int> = [0, 0];
+			var lastOffsets:Array<Float> = [0, 0];
 			for (anim in character.animationsArray)
 				if(animationInputText.text == anim.anim) {
 					lastOffsets = anim.offsets;
@@ -765,9 +765,14 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 			if (sender == scaleStepper)
 			{
 				reloadCharacterImage();
+
 				character.jsonScale = sender.value;
 				character.scale.set(character.jsonScale, character.jsonScale);
-				character.updateHitbox();
+				character.width = Math.abs(character.scale.x) * character.frameWidth;
+				character.height = Math.abs(character.scale.y) * character.frameHeight;
+				character.centerOrigin();
+				updateText();
+
 				updatePointerPos(false);
 				unsavedProgress = true;
 			}
@@ -1187,15 +1192,18 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 		var intendText:String = '';
 		for (num => anim in anims)
 		{
+			var formatedOffsets:Array<Int> = [];
+			for (a in anim.offsets)
+				formatedOffsets.push(Std.int(a));
 			if(num > 0) intendText += '\n';
 
 			if(num == curAnim)
 			{
 				var n:Int = intendText.length;
-				intendText += anim.anim + ": " + anim.offsets;
+				intendText += anim.anim + ": " + formatedOffsets;
 				animsTxt.addFormat(selectedFormat, n, intendText.length);
 			}
-			else intendText += anim.anim + ": " + anim.offsets;
+			else intendText += anim.anim + ": " + formatedOffsets;
 		}
 		animsTxt.text = intendText;
 	}
