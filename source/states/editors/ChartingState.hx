@@ -4467,6 +4467,32 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			tab_group.add(btn);
 		}
 
+		btnY += 20;
+		var btn:PsychUIButton = new PsychUIButton(btnX, btnY, '  Open Data Folder...', function()
+		{
+			if (!fileDialog.completed)
+				return;
+			upperBox.isMinimized = true;
+			upperBox.bg.visible = false;
+
+			var folderPath = Sys.getCwd().replace('/', '\\');
+			if (Mods.currentModDirectory.length > 0)
+				folderPath += 'mods\\${Mods.currentModDirectory}\\data';
+			else
+				folderPath += 'assets\\shared\\data';
+			try
+			{
+				var process = new sys.io.Process('explorer', [folderPath]);
+			}
+			catch (e)
+			{
+				trace('Failed to open folder: ' + e.message);
+			}
+		}, btnWid);
+		btn.description = 'Open Data Folder...\n- Open data folder';
+		btn.text.alignment = LEFT;
+		tab_group.add(btn);
+
 		btnY++;
 		btnY += 20;
 		var btn:PsychUIButton = new PsychUIButton(btnX, btnY, '  Save', function()
