@@ -1898,7 +1898,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 			var qPress = FlxG.keys.justPressed.Q;
 			var ePress = FlxG.keys.justPressed.E;
-			var addSus = (FlxG.keys.pressed.SHIFT ? 4 : 1) * (Conductor.stepCrochet / 2);
+			var addSus = (FlxG.keys.pressed.SHIFT ? 1 : 2) * (Conductor.stepCrochet / 2);
 			if (qPress)
 				addSus *= -1;
 
@@ -6113,8 +6113,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		chartSaved = true;
 		updateChartData();
 		var songData:SwagSong = haxe.Json.parse(haxe.Json.stringify(PlayState.SONG));
-		// Boyfriend, Opponent, Girlfriend
-		var charField:Array<{name:String, type:Int, charIndex:Int}> = [{name: '', type: 0, charIndex: 0}, {name: '', type: 1, charIndex: 0}, {name: '', type: 2, charIndex: 0}];
+		// Player, Opponent, Girlfriend
+		var charField:Array<{name:String, type:Int, charIndex:Int}> = [{name: '', type: 0, charIndex: 0}, {name: '', type: 1, charIndex: 0}, {name: 'gf', type: 2, charIndex: 0}];
 		for (i => c in songData.characters)
 		{
 			if (c.characterType == 'player' && charField[0].name == '')
@@ -6147,20 +6147,20 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			}
 			for (c in charField)
 			{
-				switch (s.focusCharacter)
+				if (songData.characters[s.focusCharacter].characterType == 'player')
 				{
-					case 0:
-						Reflect.setField(s, 'mustHitSection', true);
-						Reflect.setField(s, 'gfSection', false);
-					case 1:
-						Reflect.setField(s, 'mustHitSection', false);
-						Reflect.setField(s, 'gfSection', false);
-					case 2:
-						Reflect.setField(s, 'mustHitSection', false);
-						Reflect.setField(s, 'gfSection', true);
-					default:
-						Reflect.setField(s, 'mustHitSection', true);
-						Reflect.setField(s, 'gfSection', false);
+					Reflect.setField(s, 'mustHitSection', true);
+					Reflect.setField(s, 'gfSection', false);
+				}
+				if (songData.characters[s.focusCharacter].characterType == 'opponent')
+				{
+					Reflect.setField(s, 'mustHitSection', false);
+					Reflect.setField(s, 'gfSection', false);
+				}
+				if (songData.characters[s.focusCharacter].characterType == 'girlfriend')
+				{
+					Reflect.setField(s, 'mustHitSection', true);
+					Reflect.setField(s, 'gfSection', false);
 				}
 			}
 			Reflect.deleteField(s, 'focusCharacter');
@@ -6169,8 +6169,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		for (s in songData.notes)
 			for (n in s.sectionNotes)
 			{
-				var original:Dynamic = n[1];
-				var mapped:Float = -1;
+				var original = n[1];
+				var mapped = -1;
 				for (i in 0...Std.int(charField.length))
 				{
 					var base = charField[i].charIndex * 4;
