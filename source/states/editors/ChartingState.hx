@@ -1023,6 +1023,14 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 		ClientPrefs.toggleVolumeKeys(PsychUIInputText.focusOn == null);
 
+		for (n in selectedNotes)
+		{
+			if (lockedEvents && n.isEvent)
+			{
+				selectedNotes.remove(n);
+			}
+		}
+
 		var lastTime:Float = Conductor.songPosition;
 		outputAlpha = Math.max(0, outputAlpha - elapsed);
 		var holdingAlt:Bool = FlxG.keys.pressed.ALT;
@@ -3561,8 +3569,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		});
 		copyLastSecButton.description = 'Copy Last Section\n- Value in the right box\n   Paste previous section into current section';
 		copyLastSecButton.resize(80, 26);
-		copyLastSecStepper = new PsychUINumericStepper(objX + 110, objY + 2, 1, 1, -999, 999, 0);
-		copyLastSecOffsetStepper = new PsychUINumericStepper(objX + 220, objY + 2, 1, 1, -999, 999, 0);
+		copyLastSecStepper = new PsychUINumericStepper(objX + 107, objY + 10, 1, 1, -999, 999, 0);
+		copyLastSecOffsetStepper = new PsychUINumericStepper(objX + 207, objY + 10, 1, 0, -999, 999, 0);
 
 		objY += 40;
 		var swapSectionButton:PsychUIButton = new PsychUIButton(objX, objY, 'Move Section', function()
@@ -3670,7 +3678,9 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 		tab_group.add(copyLastSecButton);
 		tab_group.add(copyLastSecStepper);
+		tab_group.add(new FlxText(copyLastSecStepper.x, copyLastSecStepper.y - 15, 100, 'Value:'));
 		tab_group.add(copyLastSecOffsetStepper);
+		tab_group.add(new FlxText(copyLastSecOffsetStepper.x, copyLastSecOffsetStepper.y - 15, 100, 'Offset:'));
 
 		tab_group.add(swapSectionButton);
 		tab_group.add(duetSectionButton);
@@ -6100,22 +6110,27 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 	function saveChartForPsych(canQuickSave:Bool = true)
 	{
+		chartSaved = true;
+		updateChartData();
 		var songData:SwagSong = haxe.Json.parse(haxe.Json.stringify(PlayState.SONG));
 		// Boyfriend, Opponent, Girlfriend
-		var charField:Array<{name:String, type:Int}> = [{name: '', type: 0}, {name: '', type: 1}, {name: '', type: 2}];
-		for (c in songData.characters)
+		var charField:Array<{name:String, type:Int, charIndex:Int}> = [{name: '', type: 0, charIndex: 0}, {name: '', type: 1, charIndex: 0}, {name: '', type: 2, charIndex: 0}];
+		for (i => c in songData.characters)
 		{
 			if (c.characterType == 'player' && charField[0].name == '')
 			{
 				charField[0].name = c.name;
+				charField[0].charIndex = i;
 			}
 			if (c.characterType == 'opponent' && charField[1].name == '')
 			{
 				charField[1].name = c.name;
+				charField[1].charIndex = i;
 			}
 			if (c.characterType == 'girlfriend' && charField[2].name == '')
 			{
 				charField[2].name = c.name;
+				charField[2].charIndex = i;
 			}
 		}
 		Reflect.setField(songData, 'format', 'psych_v1');
@@ -6128,31 +6143,53 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			{
 				Reflect.setField(s, 'mustHitSection', true);
 				Reflect.setField(s, 'gfSection', false);
-				Reflect.deleteField(s, 'focusCharacter');
 				continue;
 			}
 			for (c in charField)
 			{
-				if (c.type == 0)
+				switch (s.focusCharacter)
 				{
-					Reflect.setField(s, 'mustHitSection', true);
-					Reflect.setField(s, 'gfSection', false);
-					Reflect.deleteField(s, 'focusCharacter');
-				}
-				if (c.type == 1)
-				{
-					Reflect.setField(s, 'mustHitSection', false);
-					Reflect.setField(s, 'gfSection', false);
-					Reflect.deleteField(s, 'focusCharacter');
-				}
-				if (c.type == 2)
-				{
-					Reflect.setField(s, 'mustHitSection', false);
-					Reflect.setField(s, 'gfSection', true);
-					Reflect.deleteField(s, 'focusCharacter');
+					case 0:
+						Reflect.setField(s, 'mustHitSection', true);
+						Reflect.setField(s, 'gfSection', false);
+					case 1:
+						Reflect.setField(s, 'mustHitSection', false);
+						Reflect.setField(s, 'gfSection', false);
+					case 2:
+						Reflect.setField(s, 'mustHitSection', false);
+						Reflect.setField(s, 'gfSection', true);
+					default:
+						Reflect.setField(s, 'mustHitSection', true);
+						Reflect.setField(s, 'gfSection', false);
 				}
 			}
+			Reflect.deleteField(s, 'focusCharacter');
 		}
+
+		for (s in songData.notes)
+			for (n in s.sectionNotes)
+			{
+				var original:Dynamic = n[1];
+				var mapped:Float = -1;
+				for (i in 0...Std.int(charField.length))
+				{
+					var base = charField[i].charIndex * 4;
+					if (original >= base && original < base + 4)
+					{
+						var offset = original - base;
+						if (i == 0)
+							mapped = offset;
+						else
+							mapped = 4 + offset;
+						if (i == 2)
+							n[3] = 'GF Sing';
+						break;
+					}
+				}
+				if (mapped >= 0)
+					n[1] = mapped;
+			}
+
 		if (Reflect.hasField(songData, 'characters'))
 			Reflect.deleteField(songData, 'characters');
 
