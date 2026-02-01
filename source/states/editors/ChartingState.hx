@@ -2861,7 +2861,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 			for (i in 0...GRID_PLAYERS)
 			{
-				var icon:HealthIcon = icons[focusCharDropDown.selectedIndex];
+				var icon:HealthIcon = icons[getCurChartSection().focusCharacter];
 				mustHitIndicator.x = icon.x + icon.width / 2;
 			}
 		}
@@ -5882,6 +5882,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				var tmp = chars[idx];
 				chars[idx] = chars[idx - 1];
 				chars[idx - 1] = tmp;
+				focusCharDropDown.selectedIndex = charListRadioGroup.checked;
 				charListRadioGroup.checked = idx - 1;
 				reloadCharacterList();
 			}
@@ -5942,6 +5943,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				var tmp = chars[idx];
 				chars[idx] = chars[idx + 1];
 				chars[idx + 1] = tmp;
+				focusCharDropDown.selectedIndex = charListRadioGroup.checked;
 				charListRadioGroup.checked = idx + 1;
 				reloadCharacterList();
 			}
