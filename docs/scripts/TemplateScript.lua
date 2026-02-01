@@ -117,35 +117,39 @@ end
 
 -- Note miss/hit
 ---- PRE
-function goodNoteHitPre(id, direction, noteType, isSustainNote)
+function goodNoteHitPre(id, direction, noteType, isSustainNote, charID)
 	-- Function called when you hit a note (***before*** note hit calculations)
 	-- id: The note member id, you can get whatever variable you want from this note, example: "getPropertyFromGroup('notes', id, 'strumTime')"
 	-- noteData: 0 = Left, 1 = Down, 2 = Up, 3 = Right
 	-- noteType: The note type string
 	-- isSustainNote: If it's a hold note, can be either true or false
+	-- charID: The character's id who hit a note
 end
-function opponentNoteHitPre(id, direction, noteType, isSustainNote)
+function opponentNoteHitPre(id, direction, noteType, isSustainNote, charID)
 	-- Function called when the opponent hits a note (***before*** note hit calculations)
 	-- id: The note member id, you can get whatever variable you want from this note, example: "getPropertyFromGroup('notes', id, 'strumTime')"
 	-- noteData: 0 = Left, 1 = Down, 2 = Up, 3 = Right
 	-- noteType: The note type string
 	-- isSustainNote: If it's a hold note, can be either true or false
+	-- charID: The character's id who hit a note
 end
 
 ---- POST
-function goodNoteHit(id, direction, noteType, isSustainNote)
+function goodNoteHit(id, direction, noteType, isSustainNote, charID)
 	-- Function called when you hit a note (***after*** note hit calculations)
 	-- id: The note member id, you can get whatever variable you want from this note, example: "getPropertyFromGroup('notes', id, 'strumTime')"
 	-- noteData: 0 = Left, 1 = Down, 2 = Up, 3 = Right
 	-- noteType: The note type string
 	-- isSustainNote: If it's a hold note, can be either true or false
+	-- charID: The character's id who hit a note
 end
-function opponentNoteHit(id, direction, noteType, isSustainNote)
+function opponentNoteHit(id, direction, noteType, isSustainNote, charID)
 	-- Function called when the opponent hits a note (***after*** note hit calculations)
 	-- id: The note member id, you can get whatever variable you want from this note, example: "getPropertyFromGroup('notes', id, 'strumTime')"
 	-- noteData: 0 = Left, 1 = Down, 2 = Up, 3 = Right
 	-- noteType: The note type string
 	-- isSustainNote: If it's a hold note, can be either true or false
+	-- charID: The character's id who hit a note
 end
 
 function noteMissPress(direction)

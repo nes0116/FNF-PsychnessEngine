@@ -175,7 +175,7 @@ class NoteSplashDebugState extends MusicBeatState implements PsychUIEventHandler
 		var notTyping:Bool = (PsychUIInputText.focusOn == null);
 		if(controls.BACK && notTyping)
 		{
-			MusicBeatState.switchState(new MainMenuState());
+			MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 			FlxG.sound.playMusic(Paths.music(MainMenuState.menuSong));
 			FlxG.mouse.visible = false;
 		}

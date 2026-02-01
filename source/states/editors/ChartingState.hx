@@ -312,6 +312,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		FlxG.sound.list.add(vocals);
 		FlxG.sound.list.add(opponentVocals);
 
+		PlayState.chartingMode = true;
+
 		vocals.autoDestroy = false;
 		vocals.looped = true;
 		opponentVocals.autoDestroy = false;
@@ -3370,10 +3372,11 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		var affectNotes:PsychUICheckBox = null;
 		var affectEvents:PsychUICheckBox = null;
 		var copyLastSecStepper:PsychUINumericStepper = null;
+		var copyLastSecOffsetStepper:PsychUINumericStepper = null;
 		var tab_group = mainBox.getTab('Section').menu;
 		var objX = 10;
 		var objY = 10;
-		function copyNotesOnSection(?secOff:Int = 0, ?showMessage:Bool = true) // Used on "Copy Section" and "Copy Last Section" buttons
+		function copyNotesOnSection(?secOff:Int = 0, ?noteOff:Int = 0, ?showMessage:Bool = true) // Used on "Copy Section" and "Copy Last Section" buttons
 		{
 			var curSectionTime:Null<Float> = cachedSectionTimes[curSec - secOff];
 			if (curSectionTime == null)
@@ -3396,6 +3399,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 					{
 						var dataCopy:Array<Dynamic> = makeNoteDataCopy(note.songData, false);
 						dataCopy[0] = note.strumTime - curSectionTime;
+						dataCopy[1] = FlxMath.wrap(dataCopy[1] + 4 * noteOff, 0, 4 * PlayState.SONG.characters.length - 1);
 						copiedNotes.push(dataCopy);
 						notesCopyNum++;
 					}
@@ -3550,7 +3554,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		{
 			var lastCopiedNotes = copiedNotes;
 			var lastCopiedEvents = copiedEvents;
-			copyNotesOnSection(Std.int(copyLastSecStepper.value), false);
+			copyNotesOnSection(Std.int(copyLastSecStepper.value), Std.int(copyLastSecOffsetStepper.value), false);
 			pasteCopiedNotesToSection(affectNotes.checked, affectEvents.checked);
 			copiedNotes = lastCopiedNotes;
 			copiedEvents = lastCopiedEvents;
@@ -3558,12 +3562,13 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		copyLastSecButton.description = 'Copy Last Section\n- Value in the right box\n   Paste previous section into current section';
 		copyLastSecButton.resize(80, 26);
 		copyLastSecStepper = new PsychUINumericStepper(objX + 110, objY + 2, 1, 1, -999, 999, 0);
+		copyLastSecOffsetStepper = new PsychUINumericStepper(objX + 220, objY + 2, 1, 1, -999, 999, 0);
 
 		objY += 40;
-		var swapSectionButton:PsychUIButton = new PsychUIButton(objX, objY, 'Swap Section', function()
+		var swapSectionButton:PsychUIButton = new PsychUIButton(objX, objY, 'Move Section', function()
 		{
 			var maxData:Int = GRID_COLUMNS_PER_PLAYER * GRID_PLAYERS;
-			for (note in curRenderedNotes)
+			for (note in (selectedNotes.length >= 1 ? selectedNotes : curRenderedNotes.members))
 			{
 				if (note != null && !note.isEvent)
 				{
@@ -3576,7 +3581,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			}
 			softReloadNotes(true);
 		});
-		swapSectionButton.description = 'Swap Section\n- Swap Player and Opponent in the current section';
+		swapSectionButton.description = 'Move Section\n- Move all notes within the current section\n- Warning: If notes are selected, this will apply only to them';
 		var duetSectionButton:PsychUIButton = new PsychUIButton(objX + 100, objY, 'Duet Section', function()
 		{
 			var side:Int = -1;
@@ -3621,7 +3626,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 			addUndoAction(ADD_NOTE, {notes: pushedNotes});
 		});
-		duetSectionButton.description = 'Duet Section\n- Paste the Player/Opponent section\n   into thePlayer/Opponent section';
+		duetSectionButton.description = 'Duet Section\n- Paste the Player/Opponent section\n   into the Player/Opponent section\n- Warning: If notes are selected, this will apply only to them';
 		var mirrorNotesButton:PsychUIButton = new PsychUIButton(objX + 200, objY, 'Mirror Notes', function()
 		{
 			var maxData:Int = GRID_COLUMNS_PER_PLAYER * GRID_PLAYERS;
@@ -3637,7 +3642,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			}
 			softReloadNotes(true);
 		});
-		mirrorNotesButton.description = 'Mirror Notes\n- Mirror the current section\n- Warning: If there is a note currently selected,\n   only that note will be mirrored';
+		mirrorNotesButton.description = 'Mirror Notes\n- Mirror the current section\n- Warning: If notes are selected, this will apply only to them';
 
 		objY += 50;
 		focusCharDropDown = new PsychUIDropDownMenu(objX, objY, characterList, function(id:Int, character:String)
@@ -3665,6 +3670,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 		tab_group.add(copyLastSecButton);
 		tab_group.add(copyLastSecStepper);
+		tab_group.add(copyLastSecOffsetStepper);
 
 		tab_group.add(swapSectionButton);
 		tab_group.add(duetSectionButton);

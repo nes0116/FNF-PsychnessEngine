@@ -274,7 +274,8 @@ class PlayState extends MusicBeatState
 	public static var nextReloadAll:Bool = false;
 	override public function create()
 	{
-		FlxTransitionableState.skipNextTransOut = true;
+		if (chartingMode)
+			FlxTransitionableState.skipNextTransOut = true;
 
 		//trace('Playback Rate: ' + playbackRate);
 		_lastLoadedModDirectory = Mods.currentModDirectory;
@@ -3073,7 +3074,7 @@ class PlayState extends MusicBeatState
 
 	function opponentNoteHit(note:Note):Void
 	{
-		var result:Dynamic = callOnLuas('opponentNoteHitPre', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
+		var result:Dynamic = callOnLuas('opponentNoteHitPre', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote, Std.int(note.noteColumn / 4)]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) result = callOnHScript('opponentNoteHitPre', [note]);
 
 		if(result == LuaUtils.Function_Stop) return;
@@ -3114,7 +3115,7 @@ class PlayState extends MusicBeatState
 		note.hitByOpponent = true;
 		
 		stagesFunc(function(stage:BaseStage) stage.opponentNoteHit(note));
-		var result:Dynamic = callOnLuas('opponentNoteHit', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
+		var result:Dynamic = callOnLuas('opponentNoteHit', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote, Std.int(note.noteColumn / 4)]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) callOnHScript('opponentNoteHit', [note]);
 
 		if (!note.isSustainNote) invalidateNote(note);
@@ -3129,7 +3130,7 @@ class PlayState extends MusicBeatState
 		var leData:Int = Math.round(Math.abs(note.noteData));
 		var leType:String = note.noteType;
 
-		var result:Dynamic = callOnLuas('goodNoteHitPre', [notes.members.indexOf(note), leData, leType, isSus]);
+		var result:Dynamic = callOnLuas('goodNoteHitPre', [notes.members.indexOf(note), leData, leType, isSus, Std.int(note.noteColumn / 4)]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) result = callOnHScript('goodNoteHitPre', [note]);
 
 		if(result == LuaUtils.Function_Stop) return;
@@ -3218,7 +3219,7 @@ class PlayState extends MusicBeatState
 		}
 
 		stagesFunc(function(stage:BaseStage) stage.goodNoteHit(note));
-		var result:Dynamic = callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
+		var result:Dynamic = callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus, Std.int(note.noteColumn / 4)]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) callOnHScript('goodNoteHit', [note]);
 		if(!note.isSustainNote) invalidateNote(note);
 	}

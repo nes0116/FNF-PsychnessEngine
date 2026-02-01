@@ -767,7 +767,7 @@ class TitleState extends MusicBeatState
 
 	function goToMainMenu():Void
 	{
-		MusicBeatState.switchState(new MainMenuState());
+		MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 		closedState = true;
 	}
 }

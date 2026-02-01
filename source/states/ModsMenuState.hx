@@ -360,7 +360,7 @@ class ModsMenuState extends MusicBeatState
 					}
 					FlxG.camera.fade(FlxColor.BLACK, 0.5, false, FlxG.resetGame, false);
 				}
-				else MusicBeatState.switchState(new MainMenuState());
+				else MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 	
 				persistentUpdate = false;
 				FlxG.autoPause = ClientPrefs.data.autoPause;
