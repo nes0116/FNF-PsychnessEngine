@@ -12,10 +12,11 @@ class PsychUIDescription extends FlxSpriteGroup
 		super(x, y);
 
 		bg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
-		bg.alpha = 0.6;
+		bg.alpha = 0.75;
 		add(bg);
 
-		text = new FlxText(5, 5, 0, description);
+		text = new FlxText(5, 5, 0, '');
+		text.applyMarkup(description, [new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFFF0000, false, false), "{warn}")]);
 		add(text);
 	}
 
@@ -34,7 +35,7 @@ class PsychUIDescription extends FlxSpriteGroup
 
 	function set_description(v:String)
 	{
-		text.text = v;
+		text.applyMarkup(v, [new FlxTextFormatMarkerPair(new FlxTextFormat(0xFFFF0000, false, false), "{warn}")]);
 		resize(Std.int(text.width + 10), Std.int(text.height + 10));
 		return (description = v);
 	}
