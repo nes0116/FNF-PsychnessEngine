@@ -298,6 +298,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			Difficulty.resetList();
 		_keysPressedBuffer.resize(keysArray.length);
 
+		PlayState.savedStartOnTime = 0;
+
 		switch (_startIndex)
 		{
 			case 1: // Charting Mode
@@ -1285,7 +1287,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			{
 				if (FlxG.keys.pressed.SHIFT)
 				{
-					PlayState.startOnTime = Conductor.songPosition;
+					PlayState.startOnTime = PlayState.savedStartOnTime = Conductor.songPosition;
 					goToPlayState();
 					return;
 				}
@@ -3567,7 +3569,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			copiedNotes = lastCopiedNotes;
 			copiedEvents = lastCopiedEvents;
 		});
-		copyLastSecButton.description = 'Copy Last Section\n - Paste previous section into current section.\n- Value\n   How many sections before/after should be copied?\n- Offset\n   The amount of movement relative to the side of the pasted section\n   (When -1, move ${GRID_PLAYERS} grids to the left, when 1, move ${GRID_PLAYERS} grids to the right.)\n{warn}[Warning]: If any notes are selected, this will only apply to those notes.{warn}';
+		copyLastSecButton.description = 'Copy Last Section\n - Paste previous section into current section.\n- Value\n   How many sections before/after should be copied?\n- Offset\n   The amount of movement relative to the side of the pasted section\n   (When -1, move ${GRID_PLAYERS + 1} grids to the left, when 1, move ${GRID_PLAYERS + 1} grids to the right.)\n{warn}[Warning]: If any notes are selected, this will only apply to those notes.{warn}';
 		copyLastSecButton.resize(80, 26);
 		copyLastSecStepper = new PsychUINumericStepper(objX + 107, objY + 10, 1, 1, -999, 999, 0);
 		copyLastSecOffsetStepper = new PsychUINumericStepper(objX + 207, objY + 10, 1, 0, -999, 999, 0);
@@ -3660,7 +3662,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				sec.focusCharacter = focusCharDropDown.selectedIndex;
 			updateHeads(true);
 		});
-		mirrorNotesButton.description = 'Focus Character\n- Character to focus on in this section.';
+		mirrorNotesButton.description = 'Focus Character\n- Character to focus on in this section.\n{warn}[Warning]: If any notes are selected, this will only apply to those notes.{warn}';
 
 		// tab_group.add(mustHitCheckBox);
 		// tab_group.add(gfSectionCheckBox);
@@ -6327,6 +6329,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 					}>
 			}> = [];
 		var nearestList:Array<Dynamic> = cast chartEditorSave.data.nearestList;
+		nearestList.reverse();
 		var nearestChartList:Array<
 			{
 				exePath:String,
@@ -6334,8 +6337,11 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				title:String,
 				description:String
 			}> = [];
+		var index:Int = 0;
 		for (data in nearestList)
 		{
+			if (index >= 10)
+				continue;
 			var parts = data[0].split("/");
 			var fileName = parts[parts.length - 1];
 			nearestChartList.push({exePath: '${Sys.programPath()}',
@@ -6349,6 +6355,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				title: fileName,
 				description: data[0]
 			});
+			index++;
 		}
 		categories.push({name: "Recently edited charts", buttons: nearestChartList});
 		categories.push({name: "Tasks", buttons: [{exePath: '${Sys.programPath()}', arguments: "--cwd=\"" + Sys.getCwd() + "\"" + " --newChart=true", title: "New Chart", description: null}]});

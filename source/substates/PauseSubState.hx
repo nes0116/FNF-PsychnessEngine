@@ -237,6 +237,7 @@ class PauseSubState extends MusicBeatSubstate
 						FlxG.sound.music.volume = 0;
 						PlayState.changedDifficulty = true;
 						PlayState.chartingMode = false;
+						PlayState.savedStartOnTime = 0;
 						return;
 					}
 				}
@@ -276,10 +277,12 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.changedDifficulty = true;
 					practiceText.visible = PlayState.instance.practiceMode;
 				case "Restart Song":
-					restartSong();
+					PlayState.startOnTime = PlayState.savedStartOnTime;
+					restartSong(PlayState.startOnTime > 0 || PlayState.chartingMode);
 				case "Leave Charting Mode":
 					restartSong();
 					PlayState.chartingMode = false;
+					PlayState.savedStartOnTime = 0;
 				case 'Skip Time':
 					if(curTime < Conductor.songPosition)
 					{
@@ -297,6 +300,7 @@ class PauseSubState extends MusicBeatSubstate
 					}
 				case 'End Song':
 					close();
+					PlayState.savedStartOnTime = 0;
 					PlayState.instance.notes.clear();
 					PlayState.instance.unspawnNotes = [];
 					PlayState.instance.finishSong(true);
@@ -312,6 +316,7 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.instance.botplaySine = 0;
 				case 'Options':
 					PlayState.instance.paused = true; // For lua
+					PlayState.savedStartOnTime = 0;
 					PlayState.instance.vocals.volume = 0;
 					PlayState.instance.canResync = false;
 					MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("OptionsState"));
@@ -337,6 +342,7 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.sound.playMusic(Paths.music(MainMenuState.menuSong));
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;
+					PlayState.savedStartOnTime = 0;
 					FlxG.camera.followLerp = 0;
 			}
 		}

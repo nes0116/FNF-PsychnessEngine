@@ -243,6 +243,7 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		else
 		{
+			initialized = true;
 			if (Main.loadChartPath != null)
 			{
 				var error:String = null;
@@ -270,7 +271,6 @@ class TitleState extends MusicBeatState
 				states.PlayState.chartingMode = true;
 				LoadingState.loadAndSwitchState(new states.editors.ChartingState(0), true);
 			}
-			initialized = true;
 		}
 
 		// credGroup.add(credTextShit);

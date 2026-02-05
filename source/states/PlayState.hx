@@ -950,6 +950,7 @@ class PlayState extends MusicBeatState
 	public var countdownSet:FlxSprite;
 	public var countdownGo:FlxSprite;
 	public static var startOnTime:Float = 0;
+	public static var savedStartOnTime:Float = 0;
 
 	function cacheCountdown()
 	{
@@ -2036,6 +2037,8 @@ class PlayState extends MusicBeatState
 		persistentUpdate = false;
 		paused = true;
 
+		PlayState.savedStartOnTime = 0;
+
 		if(FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 		if(vocals != null)
@@ -2044,6 +2047,7 @@ class PlayState extends MusicBeatState
 			opponentVocals.pause();
 
 		#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
+		FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
 		MusicBeatState.switchState(new CharacterEditorState(SONG.player2));
 	}
 

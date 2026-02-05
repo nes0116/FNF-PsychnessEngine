@@ -14,7 +14,7 @@ import options.ControlsSubState;
 class DebugDisplay extends Sprite
 {
 	public static var instance:DebugDisplay;
-	
+
 	var frameBG:Bitmap;
 	var frameTF:TextField;
 
@@ -220,9 +220,15 @@ class DebugDisplay extends Sprite
 					return;
 				var curState:String = Type.getClassName(Type.getClass(FlxG.state));
 				if (curState != 'psychlua.CustomState')
+				{
+					if (curState == 'states.PlayState' && PlayState.chartingMode)
+						FlxTransitionableState.skipNextTransIn = true;
 					MusicBeatState.resetState();
+				}
 				else
+				{
 					MusicBeatState.switchState(new CustomState(CustomState.name));
+				}
 				MusicBeatState.instance.reloadingState = true;
 			}
 		});
@@ -269,7 +275,9 @@ class DebugDisplay extends Sprite
 		engineTF.text = 'Psych Engine: v${MainMenuState.psychEngineVersion}' + '\nPsychness Engine: v${MainMenuState.psychnessEngineVersion}';
 
 		var curState:String = Type.getClassName(Type.getClass(FlxG.state));
-		stateTF.text = 'Current State: $curState' + (curState == 'psychlua.CustomState' ? ' (${CustomState.name})' : '') + '\nObjects: ${FlxG.state.members.length}';
+		stateTF.text = 'Current State: $curState'
+			+ (curState == 'psychlua.CustomState' ? ' (${CustomState.name})' : '')
+			+ '\nObjects: ${FlxG.state.members.length}';
 
 		scriptTF.text = 'Running Lua Scripts: ${MusicBeatState.instance.luaArray.length}'
 			+ '\nRunning Haxe Sctipts: ${MusicBeatState.instance.hscriptArray.length}';
