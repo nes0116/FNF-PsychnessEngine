@@ -5014,7 +5014,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		btnY += 20;
 		var btn:PsychUIButton = new PsychUIButton(btnX, btnY, '  Playtest here...', function()
 		{
-			PlayState.startOnTime = Conductor.songPosition;
+			PlayState.startOnTime = PlayState.savedStartOnTime = Conductor.songPosition;
 			goToPlayState();
 		}, btnWid);
 		btn.description = 'Playtest here (Shift + Enter)\n- Start Playtest here.\n- Shortcut: Shift + Enter';
