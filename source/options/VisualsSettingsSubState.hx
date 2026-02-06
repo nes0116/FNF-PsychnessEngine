@@ -154,6 +154,19 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 		addOption(option);
 		#end
 
+		var option:Option = new Option('Developer Mode',
+			"If checked, you will be able to access the debugger and editor.",
+			'developerMode',
+			BOOL);
+		addOption(option);
+		option.onChange = function ()
+		{
+			if (!ClientPrefs.data.developerMode)
+			{
+				Main.fpsVar.curDisplay = 0;
+			}
+		}
+
 		var option:Option = new Option('Combo Stacking',
 			"If unchecked, Ratings and Combo won't stack, saving on System Memory and making them easier to read",
 			'comboStacking',

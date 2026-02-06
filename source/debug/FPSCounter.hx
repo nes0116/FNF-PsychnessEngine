@@ -57,7 +57,7 @@ class FPSCounter extends TextField
 		#if desktop
 		// Toggle debug display
 		if (Controls.instance.justPressed('debug_3'))
-		{
+		{	
 			curDisplay = FlxMath.wrap(curDisplay + 1, 0, 2);
 
 			FlxG.save.data.displayDebugType = curDisplay;

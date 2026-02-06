@@ -385,6 +385,11 @@ class MainMenuState extends MusicBeatState
 			#if desktop
 			if (controls.justPressed('debug_1'))
 			{
+				if (!ClientPrefs.data.developerMode)
+				{
+					return;
+				}
+
 				persistentUpdate = false;
 				openSubState(new MasterEditorMenu(function()
 				{

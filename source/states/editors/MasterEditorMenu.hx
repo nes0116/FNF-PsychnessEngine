@@ -60,7 +60,6 @@ class MasterEditorMenu extends MusicBeatSubstate
 
 	override function create()
 	{
-		FlxTransitionableState.skipNextTransOut = true;
 		FlxG.camera.bgColor = FlxColor.BLACK;
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
@@ -141,7 +140,6 @@ class MasterEditorMenu extends MusicBeatSubstate
 		if (controls.BACK)
 		{
 			close();
-			// MusicBeatState.switchState(new MainMenuState());
 		}
 
 		if (controls.ACCEPT)

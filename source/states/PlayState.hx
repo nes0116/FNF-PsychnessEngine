@@ -2008,6 +2008,11 @@ class PlayState extends MusicBeatState
 
 	function openChartEditor()
 	{
+		if (!ClientPrefs.data.developerMode)
+		{
+			return;
+		}
+		
 		canResync = false;
 		FlxG.camera.followLerp = 0;
 		persistentUpdate = false;
@@ -2032,6 +2037,11 @@ class PlayState extends MusicBeatState
 
 	function openCharacterEditor()
 	{
+		if (!ClientPrefs.data.developerMode)
+		{
+			return;
+		}
+		
 		canResync = false;
 		FlxG.camera.followLerp = 0;
 		persistentUpdate = false;

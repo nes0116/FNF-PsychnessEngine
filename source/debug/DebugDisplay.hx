@@ -100,7 +100,8 @@ class DebugDisplay extends Sprite
 
 	@:noCompletion private var times:Array<Float>;
 
-	var curDisplay:Int = 0;
+	public var curDisplay:Int = 0;
+	
 	var ogSystemMouse:Bool = false;
 
 	public function new(x:Float = 5, y:Float = 5)
@@ -195,7 +196,7 @@ class DebugDisplay extends Sprite
 
 			if (e.keyCode == ClientPrefs.keyBinds.get('debug_3')[0] || e.keyCode == ClientPrefs.keyBinds.get('debug_3')[1])
 			{
-				curDisplay = FlxMath.wrap(curDisplay + 1, 0, 3);
+				curDisplay = FlxMath.wrap(curDisplay + 1, 0, ClientPrefs.data.developerMode ? 3 : 1);
 
 				if (curDisplay != 3)
 				{
@@ -212,10 +213,20 @@ class DebugDisplay extends Sprite
 			}
 
 			if (e.keyCode == ClientPrefs.keyBinds.get('debug_4')[0] || e.keyCode == ClientPrefs.keyBinds.get('debug_4')[1])
+			{
+				if (!ClientPrefs.data.developerMode)
+				{
+					return;
+				}
 				MasterEditorMenu.showConsole();
+			}
 
 			if (e.keyCode == ClientPrefs.keyBinds.get('debug_5')[0] || e.keyCode == ClientPrefs.keyBinds.get('debug_5')[1])
 			{
+				if (!ClientPrefs.data.developerMode)
+				{
+					return;
+				}
 				if (MusicBeatState.instance.reloadingState)
 					return;
 				var curState:String = Type.getClassName(Type.getClass(FlxG.state));
