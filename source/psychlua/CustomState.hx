@@ -47,8 +47,6 @@ class CustomState extends MusicBeatState
 		return staticVariables.get(name);
 	}
 
-	var tryed:Int = 0;
-
 	override function create()
 	{
 		instance = this;
