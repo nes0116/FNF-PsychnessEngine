@@ -4162,7 +4162,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 				var b:Int = 0;
 				var realNearestList:Array<Array<String>> = nearestList.copy();
-				realNearestList.reverse();
+				// realNearestList.reverse();
 				for (i in 0...5)
 				{
 					if (realNearestList[i] != null)

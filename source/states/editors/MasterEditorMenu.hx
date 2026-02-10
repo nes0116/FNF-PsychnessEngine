@@ -19,7 +19,8 @@ class MasterEditorMenu extends MusicBeatSubstate
 		'Menu Character Editor',
 		'Dialogue Editor',
 		'Dialogue Portrait Editor',
-		'Note Splash Editor'
+		'Note Splash Editor',
+		'Test Editor'
 	];
 	private var grpTexts:FlxTypedGroup<Alphabet>;
 	private var directories:Array<String> = [null];
@@ -169,6 +170,7 @@ class MasterEditorMenu extends MusicBeatSubstate
 				case 'Note Splash Editor':
 					MusicBeatState.switchState(new NoteSplashEditorState());
 			}
+
 			if (option != 'Open Console' && option != 'Mods Menu')
 			{
 				FlxG.sound.music.volume = 0;
@@ -183,6 +185,7 @@ class MasterEditorMenu extends MusicBeatSubstate
 			if (item.targetY == 0)
 				item.alpha = 1;
 		}
+
 		super.update(elapsed);
 	}
 

@@ -101,7 +101,7 @@ class DebugDisplay extends Sprite
 	@:noCompletion private var times:Array<Float>;
 
 	public var curDisplay:Int = 0;
-	
+
 	var ogSystemMouse:Bool = false;
 
 	public function new(x:Float = 5, y:Float = 5)
@@ -290,11 +290,11 @@ class DebugDisplay extends Sprite
 			+ (curState == 'psychlua.CustomState' ? ' (${CustomState.name})' : '')
 			+ '\nObjects: ${FlxG.state.members.length}';
 
-		scriptTF.text = 'Running Lua Scripts: ${MusicBeatState.instance.luaArray.length}'
-			+ '\nRunning Haxe Sctipts: ${MusicBeatState.instance.hscriptArray.length}';
+		scriptTF.text = 'Running Lua Scripts: ${MusicBeatState.instance == null ? 0 : MusicBeatState.instance.luaArray.length}'
+			+ '\nRunning Haxe Sctipts: ${MusicBeatState.instance == null ? 0 : MusicBeatState.instance.hscriptArray.length}';
 
 		debugBG.visible = debugTF.visible = debugTF.text.length != 0;
-		debugTF.text = '${mapToPrettyString(MusicBeatState.instance.debugVariables)}';
+		debugTF.text = '${mapToPrettyString(MusicBeatState.instance == null ? new Map<String, Dynamic>() : MusicBeatState.instance.debugVariables)}';
 
 		frameBG.width = frameTF.width + 10;
 		frameBG.height = frameTF.height + 10;

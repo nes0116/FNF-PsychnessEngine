@@ -61,7 +61,7 @@ class MainMenuState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
-		
+
 		persistentUpdate = persistentDraw = true;
 
 		initScripts(Paths.getSharedPath(), 'scripts/');

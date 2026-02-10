@@ -5,6 +5,8 @@ import objects.AttachedSprite;
 class CreditsState extends MusicBeatState
 {
 	var curSelected:Int = -1;
+    
+    var oldCurrentModDirectory:String = '';
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private var iconArray:Array<AttachedSprite> = [];
@@ -23,8 +25,9 @@ class CreditsState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
-
+        
 		persistentUpdate = true;
+        oldCurrentModDirectory = Mods.currentModDirectory;
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
 		add(bg);
@@ -182,7 +185,8 @@ class CreditsState extends MusicBeatState
 			}
 			if (controls.BACK)
 			{
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+                FlxG.sound.play(Paths.sound('cancelMenu'));
+                Mods.currentModDirectory = oldCurrentModDirectory;
 				MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 				quitting = true;
 			}

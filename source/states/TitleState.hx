@@ -1,20 +1,12 @@
 package states;
 
-import states.editors.ChartingState;
-import backend.WeekData;
 import flixel.input.keyboard.FlxKey;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
-import haxe.Json;
-import openfl.Assets;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
 import shaders.ColorSwap;
 import states.StoryMenuState;
 import states.MainMenuState;
-import states.editors.MasterEditorMenu;
 
 typedef TitleData =
 {
@@ -244,33 +236,6 @@ class TitleState extends MusicBeatState
 		else
 		{
 			initialized = true;
-			if (Main.loadChartPath != null)
-			{
-				var error:String = null;
-				try
-				{
-					var path:String = Main.loadChartPath[0];
-					path = path.split("\\").join("/");
-					var parts:Array<String> = path.split("/");
-					var modName:String = Main.loadChartPath[1] == null ? parts[1] : Main.loadChartPath[1];
-					var songFolder:String = parts[3];
-					var chartBase:String = parts[4].split(".")[0];
-					Mods.currentModDirectory = modName;
-					backend.Song.loadFromJson(chartBase, songFolder);
-				}
-				catch (e:Dynamic)
-				{
-					error = e;
-					trace(e);
-				}
-				states.PlayState.chartingMode = true;
-				LoadingState.loadAndSwitchState(new states.editors.ChartingState(0, error), true);
-			}
-			if (Main.openNewChart)
-			{
-				states.PlayState.chartingMode = true;
-				LoadingState.loadAndSwitchState(new states.editors.ChartingState(0), true);
-			}
 		}
 
 		// credGroup.add(credTextShit);

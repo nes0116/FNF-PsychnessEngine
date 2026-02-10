@@ -47,6 +47,8 @@ class CustomState extends MusicBeatState
 		return staticVariables.get(name);
 	}
 
+	var tryed:Int = 0;
+
 	override function create()
 	{
 		instance = this;
@@ -59,7 +61,7 @@ class CustomState extends MusicBeatState
 		var stack:Bool = true;
 		for (lua in luaArray)
 		{
-			if (lua.scriptName.contains('$name') && lua.lua != null)
+			if (lua.scriptName.contains('$name/') && lua.lua != null)
 			{
 				stack = false;
 				break;

@@ -1,7 +1,5 @@
 package states;
 
-import states.editors.MasterEditorMenu;
-
 class InitState extends MusicBeatState
 {
 	override function create()
@@ -26,6 +24,35 @@ class InitState extends MusicBeatState
 
 		FlxTransitionableState.skipNextTransIn = true;
 		FlxTransitionableState.skipNextTransOut = true;
+
+		if (Main.loadChartPath != null)
+		{
+			TitleState.initialized = true;
+			var error:String = null;
+			try
+			{
+				var path:String = Main.loadChartPath[0];
+				path = path.split("\\").join("/");
+				var parts:Array<String> = path.split("/");
+				var modName:String = Main.loadChartPath[1] == null ? parts[1] : Main.loadChartPath[1];
+				var songFolder:String = parts[parts.length - 2];
+				var chartBase:String = parts[parts.length - 1].split(".")[0];
+				Mods.currentModDirectory = modName;
+				backend.Song.loadFromJson(chartBase, songFolder);
+			}
+			catch (e:Dynamic)
+			{
+				error = e;
+				trace(e);
+			}
+			states.PlayState.chartingMode = true;
+			LoadingState.loadAndSwitchState(new states.editors.ChartingState(0, error), true);
+		}
+		if (Main.openNewChart)
+		{
+			states.PlayState.chartingMode = true;
+			LoadingState.loadAndSwitchState(new states.editors.ChartingState(0), true);
+		}
 
 		FlxG.mouse.visible = false;
 
