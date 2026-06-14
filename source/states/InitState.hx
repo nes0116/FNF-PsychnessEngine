@@ -11,8 +11,12 @@ class InitState extends MusicBeatState
 		MusicBeatState.resetStateMap();
 
 		FlxG.console.registerClass(backend.CoolUtil);
+		FlxG.console.registerClass(backend.Mods);
 
 		FlxG.console.registerClass(states.PlayState);
+		FlxG.console.registerClass(states.MainMenuState);
+		FlxG.console.registerClass(states.StoryMenuState);
+		FlxG.console.registerClass(states.FreeplayState);
 
 		if (FlxG.save.data != null && FlxG.save.data.fullscreen)
 		{

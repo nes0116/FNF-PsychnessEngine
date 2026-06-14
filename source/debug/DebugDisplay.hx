@@ -1,5 +1,7 @@
 package debug;
 
+import openfl.events.MouseEvent;
+import openfl.filters.GlowFilter;
 import openfl.Lib;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
@@ -33,10 +35,13 @@ class DebugDisplay extends Sprite
 	var logBG:Bitmap;
 	var logTF:TextField;
 
+	var screenshotPreview:Sprite;
+	var screenshotPreviewTween:FlxTween;
+
 	var logBGArray:Array<Bitmap> = [];
 	var logTFArray:Array<TextField> = [];
 
-	public function addLog(value:Dynamic, ignoreCheck:Bool = false, deprecated:Bool = false, color:Int = 0xFFFFFFFF)
+	public function addLog(value:Dynamic, ignoreCheck:Bool = true, deprecated:Bool = false, color:Int = 0xFFFFFFFF)
 	{
 		if (ignoreCheck || FunkinLua.getBool('luaDebugMode'))
 		{
@@ -183,13 +188,52 @@ class DebugDisplay extends Sprite
 				File.saveBytes('screenshots/' + fileName + '.png',
 					FlxG.stage.window.readPixels(new Rectangle(0, 0, FlxG.stage.window.width, FlxG.stage.window.height)).encode());
 
+				if (FlxG.game.getChildByName('screenshotPreview') != null)
+					FlxG.removeChild(FlxG.game.getChildByName('screenshotPreview'));
+				screenshotPreview = new Sprite();
+				var screenshotBitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
+				screenshotPreview.addChild(screenshotBitmap);
+				screenshotPreview.scaleX = screenshotPreview.scaleY = 0.25;
+				screenshotPreview.x = 10;
+				screenshotPreview.y = 10;
+				screenshotPreview.name = 'screenshotPreview';
+				screenshotPreview.filters = [new GlowFilter(0xFF000000, 1, 10, 10)];
+				FlxG.addChildBelowMouse(screenshotPreview);
+				if (screenshotPreviewTween != null)
+					screenshotPreviewTween.cancel();
+				screenshotPreviewTween = FlxTween.tween(screenshotPreview, {alpha: 0}, 0.15, {
+					ease: FlxEase.quadOut,
+					startDelay: 3,
+					onComplete: _ ->
+					{
+						screenshotPreview = null;
+						FlxG.removeChild(screenshotPreview);
+					}
+				});
+				screenshotPreview.y -= 10;
+				screenshotPreview.buttonMode = true;
+				screenshotPreview.addEventListener(MouseEvent.MOUSE_DOWN, (e:MouseEvent) ->
+				{
+					var folderPath = Sys.getCwd().replace('/', '\\');
+					folderPath += 'screenshots\\';
+					try
+					{
+						var process = new sys.io.Process('explorer $folderPath');
+					}
+					catch (e)
+					{
+						trace('Failed to open folder: ' + e.message);
+					}
+				});
+				FlxTween.tween(screenshotPreview, {y: screenshotPreview.y + 10}, 0.25, {ease: FlxEase.quadOut});
+
 				var flashBitmap = new Bitmap(new BitmapData(Std.int(FlxG.stage.width), Std.int(FlxG.stage.height), false, 0xFFFFFFFF));
 				var flashSpr = new Sprite();
 				flashSpr.addChild(flashBitmap);
-				FlxG.stage.addChild(flashSpr);
+				FlxG.addChildBelowMouse(flashSpr);
 				if (!ClientPrefs.data.flashing)
 					flashSpr.alpha = 0.1;
-				FlxTween.tween(flashSpr, {alpha: 0}, 0.15, {ease: FlxEase.quadOut, onComplete: _ -> FlxG.stage.removeChild(flashSpr)});
+				FlxTween.tween(flashSpr, {alpha: 0}, 0.15, {ease: FlxEase.quadOut, onComplete: _ -> FlxG.removeChild(flashSpr)});
 
 				FlxG.sound.play(Paths.sound('screenshot'));
 			}
@@ -223,24 +267,21 @@ class DebugDisplay extends Sprite
 
 			if (e.keyCode == ClientPrefs.keyBinds.get('debug_5')[0] || e.keyCode == ClientPrefs.keyBinds.get('debug_5')[1])
 			{
-				if (!ClientPrefs.data.developerMode)
-				{
+				if (!ClientPrefs.data.developerMode && MusicBeatState.instance != null)
 					return;
-				}
-				if (MusicBeatState.instance.reloadingState)
-					return;
+				FlxG.state.persistentUpdate = false;
 				var curState:String = Type.getClassName(Type.getClass(FlxG.state));
 				if (curState != 'psychlua.CustomState')
 				{
-					if (curState == 'states.PlayState' && PlayState.chartingMode)
-						FlxTransitionableState.skipNextTransIn = true;
-					MusicBeatState.resetState();
+					FlxTransitionableState.skipNextTransOut = true;
+					FlxG.resetState();
 				}
 				else
 				{
-					MusicBeatState.switchState(new CustomState(CustomState.name));
+					FlxTransitionableState.skipNextTransOut = true;
+					FlxG.switchState(new CustomState(CustomState.name));
 				}
-				MusicBeatState.instance.reloadingState = true;
+				trace('Reloading State...');
 			}
 		});
 

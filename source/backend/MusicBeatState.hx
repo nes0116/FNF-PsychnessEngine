@@ -2,14 +2,12 @@ package backend;
 
 import flixel.FlxState;
 import backend.PsychCamera;
-
 #if LUA_ALLOWED
 import psychlua.*;
 #else
 import psychlua.LuaUtils;
 import psychlua.HScript;
 #end
-
 #if HSCRIPT_ALLOWED
 import psychlua.HScript.HScriptInfos;
 import crowplexus.iris.Iris;
@@ -23,18 +21,18 @@ class MusicBeatState extends FlxState
 
 	public static var stateMap:Map<String, Array<Dynamic>> = [];
 	public static var defaultStateMap:Map<String, Array<Dynamic>> = [
-		"OptionsState"				=>		["options.OptionsState", []],
-
-		"FlashingState"				=>		["states.FlashingState", []],
-		"CreditsState"				=>		["states.CreditsState", []],
-		"AchievementsMenuState"		=>		["states.AchievementsMenuState", []],
-		"FreeplayState"				=>		["states.FreeplayState", []],
-		"MainMenuState"				=>		["states.MainMenuState", []],
-		"StoryMenuState"			=>		["states.StoryMenuState", []],
-		"TitleState"				=>		["states.TitleState", []],
+		"OptionsState" => ["options.OptionsState", []],
+		"FlashingState" => ["states.FlashingState", []],
+		"CreditsState" => ["states.CreditsState", []],
+		"AchievementsMenuState" => ["states.AchievementsMenuState", []],
+		"FreeplayState" => ["states.FreeplayState", []],
+		"MainMenuState" => ["states.MainMenuState", []],
+		"StoryMenuState" => ["states.StoryMenuState", []],
+		"TitleState" => ["states.TitleState", []],
 	];
 
-	public static function getClassFromStateMap(name:String):MusicBeatState {
+	public static function getClassFromStateMap(name:String):MusicBeatState
+	{
 		var curState:Null<Dynamic> = Type.resolveClass(stateMap.get(name)[0]);
 		if (curState != null)
 			return cast Type.createInstance(curState, stateMap.get(name)[1]);
@@ -45,7 +43,8 @@ class MusicBeatState extends FlxState
 		}
 	}
 
-	public static function resetStateMap():Void {
+	public static function resetStateMap():Void
+	{
 		stateMap = defaultStateMap.copy();
 	}
 
@@ -57,7 +56,9 @@ class MusicBeatState extends FlxState
 
 	private var curDecStep:Float = 0;
 	private var curDecBeat:Float = 0;
+
 	public var controls(get, never):Controls;
+
 	private function get_controls()
 	{
 		return Controls.instance;
@@ -67,22 +68,25 @@ class MusicBeatState extends FlxState
 
 	public var variables:Map<String, Dynamic> = new Map<String, Dynamic>();
 	public var debugVariables:Map<String, Dynamic> = new Map<String, Dynamic>();
+
 	public static function getVariables()
 		return getState().variables;
 
-	public var reloadingState:Bool = false;
-	override function create() {
+	override function create()
+	{
 		instance = this;
 		// initScripts(null, "scripts/");
 
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
 		#if MODS_ALLOWED Mods.updatedOnState = false; #end
 
-		if(!_psychCameraInitialized) initPsychCamera();
+		if (!_psychCameraInitialized)
+			initPsychCamera();
 
 		super.create();
 
-		if(!skip) {
+		if (!skip)
+		{
 			openSubState(new CustomFadeTransition(0.5, true));
 		}
 		FlxTransitionableState.skipNextTransOut = false;
@@ -110,9 +114,10 @@ class MusicBeatState extends FlxState
 
 		#if HSCRIPT_ALLOWED
 		for (script in hscriptArray)
-			if(script != null)
+			if (script != null)
 			{
-				if(script.exists('onDestroy')) script.call('onDestroy');
+				if (script.exists('onDestroy'))
+					script.call('onDestroy');
 				script.destroy();
 			}
 
@@ -128,14 +133,15 @@ class MusicBeatState extends FlxState
 		FlxG.cameras.reset(camera);
 		FlxG.cameras.setDefaultDrawTarget(camera, true);
 		_psychCameraInitialized = true;
-		//trace('initialized psych camera ' + Sys.cpuTime());
+		// trace('initialized psych camera ' + Sys.cpuTime());
 		return camera;
 	}
 
 	public static var timePassedOnState:Float = 0;
+
 	override function update(elapsed:Float)
 	{
-		//everyStep();
+		// everyStep();
 		var oldStep:Int = curStep;
 		timePassedOnState += elapsed;
 
@@ -144,10 +150,10 @@ class MusicBeatState extends FlxState
 
 		if (oldStep != curStep)
 		{
-			if(curStep > 0)
+			if (curStep > 0)
 				stepHit();
 
-			if(PlayState.SONG != null)
+			if (PlayState.SONG != null)
 			{
 				if (oldStep < curStep)
 					updateSection();
@@ -156,11 +162,13 @@ class MusicBeatState extends FlxState
 			}
 		}
 
-		if(FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
+		if (FlxG.save.data != null)
+			FlxG.save.data.fullscreen = FlxG.fullscreen;
 
 		FlxG.watch.addQuick('luaArray', luaArray);
-		
-		stagesFunc(function(stage:BaseStage) {
+
+		stagesFunc(function(stage:BaseStage)
+		{
 			stage.update(elapsed);
 		});
 		super.update(elapsed);
@@ -168,8 +176,9 @@ class MusicBeatState extends FlxState
 
 	private function updateSection():Void
 	{
-		if(stepsToDo < 1) stepsToDo = Math.round(getBeatsOnSection() * 4);
-		while(curStep >= stepsToDo)
+		if (stepsToDo < 1)
+			stepsToDo = Math.round(getBeatsOnSection() * 4);
+		while (curStep >= stepsToDo)
 		{
 			curSection++;
 			var beats:Float = getBeatsOnSection();
@@ -180,7 +189,8 @@ class MusicBeatState extends FlxState
 
 	private function rollbackSection():Void
 	{
-		if(curStep < 0) return;
+		if (curStep < 0)
+			return;
 
 		var lastSection:Int = curSection;
 		curSection = 0;
@@ -190,19 +200,21 @@ class MusicBeatState extends FlxState
 			if (PlayState.SONG.notes[i] != null)
 			{
 				stepsToDo += Math.round(getBeatsOnSection() * 4);
-				if(stepsToDo > curStep) break;
-				
+				if (stepsToDo > curStep)
+					break;
+
 				curSection++;
 			}
 		}
 
-		if(curSection > lastSection) sectionHit();
+		if (curSection > lastSection)
+			sectionHit();
 	}
 
 	private function updateBeat():Void
 	{
 		curBeat = Math.floor(curStep / 4);
-		curDecBeat = curDecStep/4;
+		curDecBeat = curDecStep / 4;
 	}
 
 	private function updateCurStep():Void
@@ -214,45 +226,54 @@ class MusicBeatState extends FlxState
 		curStep = lastChange.stepTime + Math.floor(shit);
 	}
 
-	public static function switchState(nextState:FlxState = null) {
-		if(nextState == null) nextState = FlxG.state;
-		if(nextState == FlxG.state)
+	public static function switchState(nextState:FlxState = null)
+	{
+		if (nextState == null)
+			nextState = FlxG.state;
+		if (nextState == FlxG.state)
 		{
 			resetState();
 			return;
 		}
 
-		if(FlxTransitionableState.skipNextTransIn) FlxG.switchState(nextState);
-		else startTransition(nextState);
+		if (FlxTransitionableState.skipNextTransIn)
+			FlxG.switchState(nextState);
+		else
+			startTransition(nextState);
 		FlxTransitionableState.skipNextTransIn = false;
 	}
 
-	public static function resetState() {
-		if(FlxTransitionableState.skipNextTransIn) FlxG.resetState();
-		else startTransition();
+	public static function resetState()
+	{
+		if (FlxTransitionableState.skipNextTransIn)
+			FlxG.resetState();
+		else
+			startTransition();
 		FlxTransitionableState.skipNextTransIn = false;
 	}
 
 	// Custom made Trans in
 	public static function startTransition(nextState:FlxState = null)
 	{
-		if(nextState == null)
+		if (nextState == null)
 			nextState = FlxG.state;
 
 		FlxG.state.openSubState(new CustomFadeTransition(0.5, false));
-		if(nextState == FlxG.state)
+		if (nextState == FlxG.state)
 			CustomFadeTransition.finishCallback = function() FlxG.resetState();
 		else
 			CustomFadeTransition.finishCallback = function() FlxG.switchState(nextState);
 	}
 
-	public static function getState():MusicBeatState {
-		return cast (FlxG.state, MusicBeatState);
+	public static function getState():MusicBeatState
+	{
+		return cast(FlxG.state, MusicBeatState);
 	}
 
 	public function stepHit():Void
 	{
-		stagesFunc(function(stage:BaseStage) {
+		stagesFunc(function(stage:BaseStage)
+		{
 			stage.curStep = curStep;
 			stage.curDecStep = curDecStep;
 			stage.stepHit();
@@ -266,10 +287,12 @@ class MusicBeatState extends FlxState
 	}
 
 	public var stages:Array<BaseStage> = [];
+
 	public function beatHit():Void
 	{
-		//trace('Beat: ' + curBeat);
-		stagesFunc(function(stage:BaseStage) {
+		// trace('Beat: ' + curBeat);
+		stagesFunc(function(stage:BaseStage)
+		{
 			stage.curBeat = curBeat;
 			stage.curDecBeat = curDecBeat;
 			stage.beatHit();
@@ -280,8 +303,9 @@ class MusicBeatState extends FlxState
 
 	public function sectionHit():Void
 	{
-		//trace('Section: ' + curSection + ', Beat: ' + curBeat + ', Step: ' + curStep);
-		stagesFunc(function(stage:BaseStage) {
+		// trace('Section: ' + curSection + ', Beat: ' + curBeat + ', Step: ' + curStep);
+		stagesFunc(function(stage:BaseStage)
+		{
 			stage.curSection = curSection;
 			stage.sectionHit();
 		});
@@ -292,14 +316,15 @@ class MusicBeatState extends FlxState
 	function stagesFunc(func:BaseStage->Void)
 	{
 		for (stage in stages)
-			if(stage != null && stage.exists && stage.active)
+			if (stage != null && stage.exists && stage.active)
 				func(stage);
 	}
 
 	function getBeatsOnSection()
 	{
 		var val:Null<Float> = 4;
-		if(PlayState.SONG != null && PlayState.SONG.notes[curSection] != null) val = PlayState.SONG.notes[curSection].sectionBeats;
+		if (PlayState.SONG != null && PlayState.SONG.notes[curSection] != null)
+			val = PlayState.SONG.notes[curSection].sectionBeats;
 		return val == null ? 4 : val;
 	}
 
@@ -313,6 +338,7 @@ class MusicBeatState extends FlxState
 	#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
 	private var luaDebugGroup:FlxTypedGroup<psychlua.DebugLuaText> = new FlxTypedGroup<psychlua.DebugLuaText>();
 	#end
+
 	public var introSoundsSuffix:String = '';
 
 	public function getLuaObject(tag:String):Dynamic
@@ -321,7 +347,8 @@ class MusicBeatState extends FlxState
 	}
 
 	#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
-	public function addTextToDebug(text:String, color:FlxColor) {
+	public function addTextToDebug(text:String, color:FlxColor)
+	{
 		var newText:psychlua.DebugLuaText = luaDebugGroup.recycle(psychlua.DebugLuaText);
 		newText.text = text;
 		newText.color = color;
@@ -330,11 +357,12 @@ class MusicBeatState extends FlxState
 		newText.setPosition(10, 8 - newText.height);
 		newText.scrollFactor.set();
 
-		luaDebugGroup.forEachAlive(function(spr:psychlua.DebugLuaText) {
+		luaDebugGroup.forEachAlive(function(spr:psychlua.DebugLuaText)
+		{
 			spr.y += newText.height + 2;
 		});
 		luaDebugGroup.add(newText);
-		
+
 		remove(luaDebugGroup);
 		insert(FlxG.state.members.length - 1, luaDebugGroup);
 
@@ -350,12 +378,12 @@ class MusicBeatState extends FlxState
 			for (file in FileSystem.readDirectory(folder))
 			{
 				#if LUA_ALLOWED
-				if(file.toLowerCase().endsWith('.lua'))
+				if (file.toLowerCase().endsWith('.lua'))
 					new FunkinLua(folder + file);
 				#end
-	
+
 				#if HSCRIPT_ALLOWED
-				if(file.toLowerCase().endsWith('.hx'))
+				if (file.toLowerCase().endsWith('.hx'))
 					initHScript(folder + file);
 				#end
 			}
@@ -368,17 +396,18 @@ class MusicBeatState extends FlxState
 	{
 		#if MODS_ALLOWED
 		var luaToLoad:String = Paths.modFolders(luaFile);
-		if(!FileSystem.exists(luaToLoad))
+		if (!FileSystem.exists(luaToLoad))
 			luaToLoad = Paths.getSharedPath(luaFile);
 
-		if(FileSystem.exists(luaToLoad))
+		if (FileSystem.exists(luaToLoad))
 		#elseif sys
 		var luaToLoad:String = Paths.getSharedPath(luaFile);
-		if(OpenFlAssets.exists(luaToLoad))
+		if (OpenFlAssets.exists(luaToLoad))
 		#end
 		{
 			for (script in luaArray)
-				if(script.scriptName == luaToLoad) return false;
+				if (script.scriptName == luaToLoad)
+					return false;
 
 			new FunkinLua(luaToLoad);
 			return true;
@@ -392,15 +421,16 @@ class MusicBeatState extends FlxState
 	{
 		#if MODS_ALLOWED
 		var scriptToLoad:String = Paths.modFolders(scriptFile);
-		if(!FileSystem.exists(scriptToLoad))
+		if (!FileSystem.exists(scriptToLoad))
 			scriptToLoad = Paths.getSharedPath(scriptFile);
 		#else
 		var scriptToLoad:String = Paths.getSharedPath(scriptFile);
 		#end
 
-		if(FileSystem.exists(scriptToLoad))
+		if (FileSystem.exists(scriptToLoad))
 		{
-			if (Iris.instances.exists(scriptToLoad)) return false;
+			if (Iris.instances.exists(scriptToLoad))
+				return false;
 
 			initHScript(scriptToLoad);
 			return true;
@@ -414,101 +444,122 @@ class MusicBeatState extends FlxState
 		try
 		{
 			newScript = new HScript(null, file);
-			if (newScript.exists('onCreate')) newScript.call('onCreate');
+			if (newScript.exists('onCreate'))
+				newScript.call('onCreate');
 			trace('initialized hscript interp successfully: $file');
 			hscriptArray.push(newScript);
 		}
-		catch(e:IrisError)
+		catch (e:IrisError)
 		{
 			var pos:HScriptInfos = cast {fileName: file, showLine: false};
 			Iris.error(Printer.errorToString(e, false), pos);
-			var newScript:HScript = cast (Iris.instances.get(file), HScript);
-			if(newScript != null)
+			var newScript:HScript = cast(Iris.instances.get(file), HScript);
+			if (newScript != null)
 				newScript.destroy();
 		}
 	}
 	#end
 
-	public function callOnScripts(funcToCall:String, args:Array<Dynamic> = null, ignoreStops = false, exclusions:Array<String> = null, excludeValues:Array<Dynamic> = null):Dynamic {
+	public function callOnScripts(funcToCall:String, args:Array<Dynamic> = null, ignoreStops = false, exclusions:Array<String> = null,
+			excludeValues:Array<Dynamic> = null):Dynamic
+	{
 		var returnVal:Dynamic = LuaUtils.Function_Continue;
-		if(args == null) args = [];
-		if(exclusions == null) exclusions = [];
-		if(excludeValues == null) excludeValues = [LuaUtils.Function_Continue];
+		if (args == null)
+			args = [];
+		if (exclusions == null)
+			exclusions = [];
+		if (excludeValues == null)
+			excludeValues = [LuaUtils.Function_Continue];
 
 		var result:Dynamic = callOnLuas(funcToCall, args, ignoreStops, exclusions, excludeValues);
-		if(result == null || excludeValues.contains(result)) result = callOnHScript(funcToCall, args, ignoreStops, exclusions, excludeValues);
+		if (result == null || excludeValues.contains(result))
+			result = callOnHScript(funcToCall, args, ignoreStops, exclusions, excludeValues);
 		return result;
 	}
 
-	public function callOnLuas(funcToCall:String, args:Array<Dynamic> = null, ignoreStops = false, exclusions:Array<String> = null, excludeValues:Array<Dynamic> = null):Dynamic {
+	public function callOnLuas(funcToCall:String, args:Array<Dynamic> = null, ignoreStops = false, exclusions:Array<String> = null,
+			excludeValues:Array<Dynamic> = null):Dynamic
+	{
 		var returnVal:Dynamic = LuaUtils.Function_Continue;
 		#if LUA_ALLOWED
-		if(args == null) args = [];
-		if(exclusions == null) exclusions = [];
-		if(excludeValues == null) excludeValues = [LuaUtils.Function_Continue];
+		if (args == null)
+			args = [];
+		if (exclusions == null)
+			exclusions = [];
+		if (excludeValues == null)
+			excludeValues = [LuaUtils.Function_Continue];
 
 		var arr:Array<FunkinLua> = [];
 		for (script in luaArray)
 		{
-			if(script.closed)
+			if (script.closed)
 			{
 				arr.push(script);
 				continue;
 			}
 
-			if(exclusions.contains(script.scriptName))
+			if (exclusions.contains(script.scriptName))
 				continue;
 
 			var myValue:Dynamic = script.call(funcToCall, args);
-			if((myValue == LuaUtils.Function_StopLua || myValue == LuaUtils.Function_StopAll) && !excludeValues.contains(myValue) && !ignoreStops)
+			if ((myValue == LuaUtils.Function_StopLua || myValue == LuaUtils.Function_StopAll)
+				&& !excludeValues.contains(myValue)
+				&& !ignoreStops)
 			{
 				returnVal = myValue;
 				break;
 			}
 
-			if(myValue != null && !excludeValues.contains(myValue))
+			if (myValue != null && !excludeValues.contains(myValue))
 				returnVal = myValue;
 
-			if(script.closed) arr.push(script);
+			if (script.closed)
+				arr.push(script);
 		}
 
-		if(arr.length > 0)
+		if (arr.length > 0)
 			for (script in arr)
 				luaArray.remove(script);
 		#end
 		return returnVal;
 	}
 
-	public function callOnHScript(funcToCall:String, args:Array<Dynamic> = null, ?ignoreStops:Bool = false, exclusions:Array<String> = null, excludeValues:Array<Dynamic> = null):Dynamic {
+	public function callOnHScript(funcToCall:String, args:Array<Dynamic> = null, ?ignoreStops:Bool = false, exclusions:Array<String> = null,
+			excludeValues:Array<Dynamic> = null):Dynamic
+	{
 		var returnVal:Dynamic = LuaUtils.Function_Continue;
 
 		#if HSCRIPT_ALLOWED
-		if(exclusions == null) exclusions = new Array();
-		if(excludeValues == null) excludeValues = new Array();
+		if (exclusions == null)
+			exclusions = new Array();
+		if (excludeValues == null)
+			excludeValues = new Array();
 		excludeValues.push(LuaUtils.Function_Continue);
 
 		var len:Int = hscriptArray.length;
 		if (len < 1)
 			return returnVal;
 
-		for(script in hscriptArray)
+		for (script in hscriptArray)
 		{
 			@:privateAccess
-			if(script == null || !script.exists(funcToCall) || exclusions.contains(script.origin))
+			if (script == null || !script.exists(funcToCall) || exclusions.contains(script.origin))
 				continue;
 
 			var callValue = script.call(funcToCall, args);
-			if(callValue != null)
+			if (callValue != null)
 			{
 				var myValue:Dynamic = callValue.returnValue;
 
-				if((myValue == LuaUtils.Function_StopHScript || myValue == LuaUtils.Function_StopAll) && !excludeValues.contains(myValue) && !ignoreStops)
+				if ((myValue == LuaUtils.Function_StopHScript || myValue == LuaUtils.Function_StopAll)
+					&& !excludeValues.contains(myValue)
+					&& !ignoreStops)
 				{
 					returnVal = myValue;
 					break;
 				}
 
-				if(myValue != null && !excludeValues.contains(myValue))
+				if (myValue != null && !excludeValues.contains(myValue))
 					returnVal = myValue;
 			}
 		}
@@ -517,17 +568,22 @@ class MusicBeatState extends FlxState
 		return returnVal;
 	}
 
-	public function setOnScripts(variable:String, arg:Dynamic, exclusions:Array<String> = null) {
-		if(exclusions == null) exclusions = [];
+	public function setOnScripts(variable:String, arg:Dynamic, exclusions:Array<String> = null)
+	{
+		if (exclusions == null)
+			exclusions = [];
 		setOnLuas(variable, arg, exclusions);
 		setOnHScript(variable, arg, exclusions);
 	}
 
-	public function setOnLuas(variable:String, arg:Dynamic, exclusions:Array<String> = null) {
+	public function setOnLuas(variable:String, arg:Dynamic, exclusions:Array<String> = null)
+	{
 		#if LUA_ALLOWED
-		if(exclusions == null) exclusions = [];
-		for (script in luaArray) {
-			if(exclusions.contains(script.scriptName))
+		if (exclusions == null)
+			exclusions = [];
+		for (script in luaArray)
+		{
+			if (exclusions.contains(script.scriptName))
 				continue;
 
 			script.set(variable, arg);
@@ -535,11 +591,14 @@ class MusicBeatState extends FlxState
 		#end
 	}
 
-	public function setOnHScript(variable:String, arg:Dynamic, exclusions:Array<String> = null) {
+	public function setOnHScript(variable:String, arg:Dynamic, exclusions:Array<String> = null)
+	{
 		#if HSCRIPT_ALLOWED
-		if(exclusions == null) exclusions = [];
-		for (script in hscriptArray) {
-			if(exclusions.contains(script.origin))
+		if (exclusions == null)
+			exclusions = [];
+		for (script in hscriptArray)
+		{
+			if (exclusions.contains(script.origin))
 				continue;
 
 			script.set(variable, arg);

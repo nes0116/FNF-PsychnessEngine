@@ -115,10 +115,12 @@ options_adjust_delay_and_combo: "Ajustar Atraso e Combo"
 options_gameplay: "Jogabilidade"
 options_visuals: "Visuais"
 options_graphics: "Gráficos"
+options_developer: "Desenvolvedor"
 options_language: "Idioma"
 
 graphics_menu: "Configurações de Gráficos"
 visuals_menu: "Opções Visuais"
+developer_menu: "Opções Desenvolvedor"
 gameplay_menu: "Configurações de Gameplay"
 
 // Note Colors Menu
@@ -260,6 +262,8 @@ setting_safe_frames: "Safe Frames"
 description_safe_frames: "Ajusta quanto tempo a mais ou a menos você terá\npara acertar uma nota mais cedo ou mais tarde."
 setting_sustains_as_one_note: "Notas Longas Fundidas"
 description_sustains_as_one_note: "Se marcado, notas longas não poderão ser acertadas se a principal não for acertada,\nalém de contar como um único erro."
+setting_developer_mode: "Modo de desenvolvedor"
+description_developer_mode: "Se essa opção estiver marcada, você poderá acessar o depurador e o editor."
 
 // Loading Screen
 now_loading: "Carregando{1}"

@@ -189,19 +189,39 @@ class Song
 				}
 
 				var sectionData:Array<SwagSection> = songJson.notes;
-				for (section in sectionData)
+				if (songJson.notes != null)
 				{
-					if (section.mustHitSection)
-						section.focusCharacter = 0;
-					else
-						section.focusCharacter = 1;
-					if (section.gfSection)
-						section.focusCharacter = 2;
+					for (section in sectionData)
+					{
+						if (section.mustHitSection)
+							section.focusCharacter = 0;
+						else
+							section.focusCharacter = 1;
+						if (section.gfSection)
+							section.focusCharacter = 2;
 
-					if (Reflect.hasField(section, 'mustHitSection'))
-						Reflect.deleteField(section, 'mustHitSection');
-					if (Reflect.hasField(section, 'gfSection'))
-						Reflect.deleteField(section, 'gfSection');
+						if (songJson.format == 'unknown')
+						{
+							if (section.focusCharacter == 1)
+								for (n in section.sectionNotes)
+								{
+									n[1] += 4;
+									if (n[1] >= 8)
+										n[1] -= 8;
+								}
+							if (section.focusCharacter == 2)
+								for (n in section.sectionNotes)
+								{
+									if (n[1] <= 3)
+										n[1] += 8;
+								}
+						}
+
+						if (Reflect.hasField(section, 'mustHitSection'))
+							Reflect.deleteField(section, 'mustHitSection');
+						if (Reflect.hasField(section, 'gfSection'))
+							Reflect.deleteField(section, 'gfSection');
+					}
 				}
 		}
 	}
@@ -271,15 +291,9 @@ class Song
 				case 'psychness':
 					if (!fmt.startsWith('psychness')) // Convert to Psychness format
 					{
-						if (!fmt.startsWith('psych_v1')) // Convert to Psych 1.0 format
-						{
-							trace('converting chart $nameForError with format $fmt to psych_v1 format...');
-							songJson.format = 'psych_v1_convert';
-							convert(songJson, convertTo);
-						}
 						trace('converting chart $nameForError with format $fmt to psychness format...');
-						songJson.format = 'psychness_convert';
 						convert(songJson, convertTo);
+						songJson.format = 'psychness_convert';
 					}
 			}
 		}

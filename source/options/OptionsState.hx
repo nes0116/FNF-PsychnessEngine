@@ -1,5 +1,6 @@
 package options;
 
+import flixel.FlxSubState;
 import states.MainMenuState;
 import backend.StageData;
 
@@ -11,16 +12,19 @@ class OptionsState extends MusicBeatState
 		'Adjust Delay and Combo',
 		'Graphics',
 		'Visuals',
-		'Gameplay'
-		#if TRANSLATIONS_ALLOWED , 'Language' #end
+		'Gameplay',
+		'Developer'
+		#if TRANSLATIONS_ALLOWED, 'Language' #end
 	];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
+
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
 	public static var onPlayState:Bool = false;
 
-	function openSelectedSubstate(label:String) {
-		switch(label)
+	function openSelectedSubstate(label:String)
+	{
+		switch (label)
 		{
 			case 'Note Colors':
 				openSubState(new options.NotesColorSubState());
@@ -34,6 +38,8 @@ class OptionsState extends MusicBeatState
 				openSubState(new options.GameplaySettingsSubState());
 			case 'Adjust Delay and Combo':
 				MusicBeatState.switchState(new options.NoteOffsetState());
+			case 'Developer':
+				openSubState(new options.DeveloperSettingsSubState());
 			case 'Language':
 				openSubState(new options.LanguageSubState());
 		}
@@ -48,11 +54,13 @@ class OptionsState extends MusicBeatState
 		DiscordClient.changePresence("Options Menu", null);
 		#end
 
+		persistentUpdate = true;
+
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
 		bg.color = 0xFFea71fd;
 		bg.updateHitbox();
-
+		bg.scrollFactor.set();
 		bg.screenCenter();
 		add(bg);
 
@@ -76,18 +84,33 @@ class OptionsState extends MusicBeatState
 		ClientPrefs.saveSettings();
 
 		super.create();
+
+		for (num => options in grpOptions.members)
+		{
+			if (num == 0)
+				FlxG.camera.minScrollY = options.y - 22.5;
+			FlxG.camera.maxScrollY = options.y + options.height + 22.5;
+		}
+	}
+
+	override function openSubState(SubState:FlxSubState)
+	{
+		persistentUpdate = false;
+		super.openSubState(SubState);
 	}
 
 	override function closeSubState()
 	{
 		super.closeSubState();
+		persistentUpdate = true;
 		ClientPrefs.saveSettings();
 		#if DISCORD_ALLOWED
 		DiscordClient.changePresence("Options Menu", null);
 		#end
 	}
 
-	override function update(elapsed:Float) {
+	override function update(elapsed:Float)
+	{
 		super.update(elapsed);
 
 		if (controls.UI_UP_P)
@@ -98,17 +121,25 @@ class OptionsState extends MusicBeatState
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			if(onPlayState)
+			if (onPlayState)
 			{
 				StageData.loadDirectory(PlayState.SONG);
 				LoadingState.loadAndSwitchState(new PlayState());
 				FlxG.sound.music.volume = 0;
 			}
-			else MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
+			else
+				MusicBeatState.switchState(MusicBeatState.getClassFromStateMap("MainMenuState"));
 		}
-		else if (controls.ACCEPT) openSelectedSubstate(options[curSelected]);
+		else if (controls.ACCEPT)
+			openSelectedSubstate(options[curSelected]);
+
+		for (item in grpOptions.members)
+		{
+			if (item.targetY == 0)
+				FlxG.camera.scroll.y = FlxMath.lerp(item.y - item.height / 2 - FlxG.height / 2 + item.height, FlxG.camera.scroll.y, Math.exp(-elapsed * 8));
+		}
 	}
-	
+
 	function changeSelection(change:Int = 0)
 	{
 		curSelected = FlxMath.wrap(curSelected + change, 0, options.length - 1);

@@ -1,5 +1,7 @@
 package;
 
+import states.StoryMenuState;
+import states.FreeplayState;
 #if android
 import android.content.Context;
 #end
@@ -33,6 +35,8 @@ import haxe.CallStack;
 import haxe.io.Path;
 #end
 import backend.Highscore;
+
+using StringTools;
 
 // NATIVE API STUFF, YOU CAN IGNORE THIS AND SCROLL //
 #if (linux && !debug)
@@ -83,6 +87,12 @@ class Main extends Sprite
 			loadChartPath = [argsMap.get('chart'), argsMap.get('modDirectory')];
 		if (argsMap.exists("newChart"))
 			openNewChart = argsMap.get('newChart');
+
+		#if windows
+		untyped __cpp__("{\n        HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);\n        DWORD dwMode = 0;\n        if (GetConsoleMode(hOut, &dwMode))\n            SetConsoleMode(hOut, dwMode | 0x0004);\n    }");
+		untyped __cpp__("SetConsoleOutputCP(65001);");
+		untyped __cpp__("SetConsoleCP(65001);");
+		#end
 
 		Lib.current.addChild(new Main());
 	}
@@ -158,69 +168,7 @@ class Main extends Sprite
 		Highscore.load();
 
 		#if HSCRIPT_ALLOWED
-		Iris.warn = function(x, ?pos:haxe.PosInfos)
-		{
-			Iris.logLevel(WARN, x, pos);
-			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null)
-				newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
-			#if LUA_ALLOWED
-			if (newPos.isLua == true)
-			{
-				msgInfo += 'HScript:';
-				newPos.showLine = false;
-			}
-			#end
-			if (newPos.showLine == true)
-			{
-				msgInfo += '${newPos.lineNumber}:';
-			}
-			msgInfo += ' $x';
-			MusicBeatState.instance.addTextToDebug('WARNING: $msgInfo', FlxColor.YELLOW);
-		}
-		Iris.error = function(x, ?pos:haxe.PosInfos)
-		{
-			Iris.logLevel(ERROR, x, pos);
-			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null)
-				newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
-			#if LUA_ALLOWED
-			if (newPos.isLua == true)
-			{
-				msgInfo += 'HScript:';
-				newPos.showLine = false;
-			}
-			#end
-			if (newPos.showLine == true)
-			{
-				msgInfo += '${newPos.lineNumber}:';
-			}
-			msgInfo += ' $x';
-			MusicBeatState.instance.addTextToDebug('ERROR: $msgInfo', FlxColor.RED);
-		}
-		Iris.fatal = function(x, ?pos:haxe.PosInfos)
-		{
-			Iris.logLevel(FATAL, x, pos);
-			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null)
-				newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '') + '${newPos.fileName}:';
-			#if LUA_ALLOWED
-			if (newPos.isLua == true)
-			{
-				msgInfo += 'HScript:';
-				newPos.showLine = false;
-			}
-			#end
-			if (newPos.showLine == true)
-			{
-				msgInfo += '${newPos.lineNumber}:';
-			}
-			msgInfo += ' $x';
-			MusicBeatState.instance.addTextToDebug('FATAL: $msgInfo', 0xFFBB0000);
-		}
+		updateIrisLogOptions();
 		#end
 
 		#if LUA_ALLOWED Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(psychlua.CallbackHandler.call)); #end
@@ -228,6 +176,7 @@ class Main extends Sprite
 		ClientPrefs.loadDefaultKeys();
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
 		addChild(new FlxGame(game.width, game.height, game.initialState, game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
+		updateLogOptions();
 
 		#if !mobile
 		fpsVar = new DebugDisplay(10, 10);
@@ -297,6 +246,83 @@ class Main extends Sprite
 			sprite.__cacheBitmapData = null;
 		}
 	}
+
+	public static function updateLogOptions()
+	{
+		haxe.Log.trace = function(v:Dynamic, ?infos:haxe.PosInfos)
+		{
+			var time:String = DateTools.format(Date.now(), "%H:%M:%S");
+			var message:String = '[  \x1b[32m$time  \x1b[0m|  \x1b[36m${infos.fileName}:${infos.lineNumber}: (${infos.methodName})  \x1b[0m] $v';
+			if (!ClientPrefs.data.colorTextsOnConsole)
+				message = '[  $time  |  ${infos.fileName}:${infos.lineNumber}: (${infos.methodName})  ] $v';
+			Sys.println(message);
+		}
+	}
+
+	#if HSCRIPT_ALLOWED
+	public static function updateIrisLogOptions()
+	{
+		Iris.print = function(x, ?pos:haxe.PosInfos)
+		{
+			var time:String = DateTools.format(Date.now(), "%H:%M:%S");
+			var path:String = ClientPrefs.data.displayCwdOnConsole ? Sys.getCwd() + pos.fileName : pos.fileName;
+			path = path.replace("\\", "/");
+			var newPos:HScriptInfos = cast pos;
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var message:String = '[  \x1b[32m$time  \x1b[0m|  \x1b[33m$path:${newPos.lineNumber}:${newPos.funcName != null ? ' (${newPos.funcName})' : ''}  \x1b[0m] $x';
+			if (!ClientPrefs.data.colorTextsOnConsole)
+				message = '[  $time  |  $path:${newPos.lineNumber}:${newPos.funcName != null ? ' (${newPos.funcName})' : ''}  ] $x';
+			Sys.println(message);
+			DebugDisplay.instance.addLog(x, false, false, 0xFFFFFFFF);
+		}
+
+		Iris.warn = function(x, ?pos:haxe.PosInfos)
+		{
+			var time:String = DateTools.format(Date.now(), "%H:%M:%S");
+			var path:String = Sys.getCwd() + pos.fileName;
+			path = path.replace("\\", "/");
+			var newPos:HScriptInfos = cast pos;
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var message:String = '[  \x1b[32m$time  \x1b[0m|  \x1b[33m$path:${newPos.lineNumber}:${newPos.funcName != null ? ' (${newPos.funcName})' : ''}  \x1b[0m] \x1b[33m$x\x1b[0m';
+			if (!ClientPrefs.data.colorTextsOnConsole)
+				message = '[  $time  |  $path:${newPos.lineNumber}:${newPos.funcName != null ? ' (${newPos.funcName})' : ''}  ] $x';
+			Sys.println(message);
+			DebugDisplay.instance.addLog(x, false, false, 0xFFFFFF00);
+		}
+
+		Iris.error = function(x, ?pos:haxe.PosInfos)
+		{
+			var time:String = DateTools.format(Date.now(), "%H:%M:%S");
+			var path:String = Sys.getCwd() + pos.fileName;
+			path = path.replace("\\", "/");
+			var newPos:HScriptInfos = cast pos;
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var message:String = '[  \x1b[32m$time  \x1b[0m|  \x1b[31m$path:${newPos.lineNumber}:${newPos.funcName != null ? ' (${newPos.funcName})' : ''}  \x1b[0m] \x1b[31m$x\x1b[0m';
+			if (!ClientPrefs.data.colorTextsOnConsole)
+				message = '[  $time  |  $path:${newPos.lineNumber}:${newPos.funcName != null ? ' (${newPos.funcName})' : ''}  ] $x';
+			Sys.println(message);
+			DebugDisplay.instance.addLog(x, false, false, 0xFFFF0000);
+		}
+
+		Iris.fatal = function(x, ?pos:haxe.PosInfos)
+		{
+			var time:String = DateTools.format(Date.now(), "%H:%M:%S");
+			var path:String = Sys.getCwd() + pos.fileName;
+			path = path.replace("\\", "/");
+			var newPos:HScriptInfos = cast pos;
+			if (newPos.showLine == null)
+				newPos.showLine = true;
+			var message:String = '[  \x1b[32m$time  \x1b[0m|  \x1b[31m$path:${newPos.lineNumber}:${newPos.funcName != null ? ' (${newPos.funcName})' : ''}  \x1b[0m] \x1b[31m$x\x1b[0m';
+			if (!ClientPrefs.data.colorTextsOnConsole)
+				message = '[  $time  |  $path:${newPos.lineNumber}:${newPos.funcName != null ? ' (${newPos.funcName})' : ''}  ] $x';
+			Sys.println(message);
+			DebugDisplay.instance.addLog(x, false, false, 0xFFFF0000);
+		}
+	}
+	#end
 
 	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 	// very cool person for real they don't get enough credit for their work
