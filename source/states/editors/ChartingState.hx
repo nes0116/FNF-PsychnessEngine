@@ -5987,24 +5987,28 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		btnY += 40;
 		var charMoveUpButton:PsychUIButton = new PsychUIButton(btnX, btnY, 'Move Up', function()
 		{
-			var idx = charListRadioGroup.checked;
+			var from:Int = charListRadioGroup.checked;
+			var to:Int = from - 1;
 			var chars = PlayState.SONG.characters;
 
-			if (idx > 0)
+			if (from > 0)
 			{
-				var tmp = chars[idx];
-				chars[idx] = chars[idx - 1];
-				chars[idx - 1] = tmp;
+				var tmp = chars[from];
+				chars[from] = chars[to];
+				chars[to] = tmp;
 				focusCharDropDown.selectedIndex = charListRadioGroup.checked;
-				charListRadioGroup.checked = idx - 1;
+				charListRadioGroup.checked = to;
 				reloadCharacterList();
+
+				for (i => n in PlayState.SONG.notes)
+					n.focusCharacter = n.focusCharacter == from ? to : from;
 			}
 			else
 				return;
 
-			var startLeftIdx = idx * GRID_COLUMNS_PER_PLAYER;
+			var startLeftIdx = from * GRID_COLUMNS_PER_PLAYER;
 			var endLeftIdx = startLeftIdx + (GRID_COLUMNS_PER_PLAYER - 1);
-			var startRightIdx = (idx - 1) * GRID_COLUMNS_PER_PLAYER;
+			var startRightIdx = (to) * GRID_COLUMNS_PER_PLAYER;
 			var endRightIdx = startRightIdx + (GRID_COLUMNS_PER_PLAYER - 1);
 			var willMoveLeftNotes:Array<MetaNote> = [];
 			var willMoveRightNotes:Array<MetaNote> = [];
@@ -6031,9 +6035,9 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			softReloadNotes();
 
 			addUndoAction(MOVE_CHARACTER, {
-				allow: idx > 0,
-				index: idx,
-				newIndex: idx - 1,
+				allow: from > 0,
+				index: from,
+				newIndex: to,
 				willMoveLeftNotes: willMoveRightNotes,
 				willMoveRightNotes: willMoveLeftNotes
 			});
@@ -6048,24 +6052,33 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		btnY += 25;
 		var charMoveDownButton:PsychUIButton = new PsychUIButton(btnX, btnY, 'Move Down', function()
 		{
-			var idx = charListRadioGroup.checked;
+			var from:Int = charListRadioGroup.checked;
+			var to:Int = from + 1;
 			var chars = PlayState.SONG.characters;
 
-			if (idx < chars.length - 1)
+			if (from < chars.length - 1)
 			{
-				var tmp = chars[idx];
-				chars[idx] = chars[idx + 1];
-				chars[idx + 1] = tmp;
+				var tmp = chars[from];
+				chars[from] = chars[to];
+				chars[to] = tmp;
 				focusCharDropDown.selectedIndex = charListRadioGroup.checked;
-				charListRadioGroup.checked = idx + 1;
+				charListRadioGroup.checked = to;
 				reloadCharacterList();
+
+				for (i => n in PlayState.SONG.notes)
+				{
+					if (n.focusCharacter == from)
+						n.focusCharacter = to;
+					else if (n.focusCharacter == to)
+						n.focusCharacter = from;
+				}
 			}
 			else
 				return;
 
-			var startLeftIdx = (idx + 1) * GRID_COLUMNS_PER_PLAYER;
+			var startLeftIdx = (to) * GRID_COLUMNS_PER_PLAYER;
 			var endLeftIdx = startLeftIdx + (GRID_COLUMNS_PER_PLAYER - 1);
-			var startRightIdx = idx * GRID_COLUMNS_PER_PLAYER;
+			var startRightIdx = from * GRID_COLUMNS_PER_PLAYER;
 			var endRightIdx = startRightIdx + (GRID_COLUMNS_PER_PLAYER - 1);
 			var willMoveLeftNotes:Array<MetaNote> = [];
 			var willMoveRightNotes:Array<MetaNote> = [];
@@ -6092,9 +6105,9 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			softReloadNotes();
 
 			addUndoAction(MOVE_CHARACTER, {
-				allow: idx < chars.length - 1,
-				index: idx,
-				newIndex: idx + 1,
+				allow: from < chars.length - 1,
+				index: from,
+				newIndex: to,
 				willMoveLeftNotes: willMoveRightNotes,
 				willMoveRightNotes: willMoveLeftNotes
 			});
@@ -6869,14 +6882,18 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 					if (action.data.allow)
 					{
 						var tmp = PlayState.SONG.characters[action.data.index];
-						for (n in PlayState.SONG.notes)
-						{
-							//
-						}
 						PlayState.SONG.characters[action.data.index] = PlayState.SONG.characters[action.data.newIndex];
 						PlayState.SONG.characters[action.data.newIndex] = tmp;
 						charListRadioGroup.checked = action.data.newIndex;
 						reloadCharacterList();
+
+						for (i => n in PlayState.SONG.notes)
+						{
+							if (n.focusCharacter == action.data.index)
+								n.focusCharacter = action.data.newIndex;
+							else if (n.focusCharacter == action.data.newIndex)
+								n.focusCharacter = action.data.index;
+						}
 					}
 					else
 						return;
