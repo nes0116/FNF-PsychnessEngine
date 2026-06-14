@@ -18,7 +18,6 @@ class MainMenuState extends MusicBeatState
 {
 	public static var instance:MainMenuState;
 
-<<<<<<< HEAD
 	public static var psychnessEngineVersion:String = '0.6'; // Woah cool
 	public static var psychEngineVersion:String = '1.0.3'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
