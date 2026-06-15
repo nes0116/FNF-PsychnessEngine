@@ -4,10 +4,14 @@ class CustomState extends MusicBeatState
 {
 	public static var name:String = 'unnamed';
 
-	public function new(name:String)
+	public var data:Dynamic;
+
+	public function new(name:String, data:Dynamic = null)
 	{
 		super();
 		CustomState.name = name;
+		if (data != null)
+			this.data = data;
 	}
 
 	public static var instance:CustomState;
@@ -60,6 +64,14 @@ class CustomState extends MusicBeatState
 		for (lua in luaArray)
 		{
 			if (lua.scriptName.contains('$name/') && lua.lua != null)
+			{
+				stack = false;
+				break;
+			}
+		}
+		for (hx in hscriptArray)
+		{
+			if (hx.name.contains('$name/') && hx != null)
 			{
 				stack = false;
 				break;

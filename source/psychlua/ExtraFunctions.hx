@@ -269,6 +269,10 @@ class ExtraFunctions
 		{
 			return str.trim();
 		});
+		Lua_helper.add_callback(lua, "stringContains", function(str:String, value:String)
+		{
+			return str.contains(value);
+		});
 
 		// Randomization
 		Lua_helper.add_callback(lua, "getRandomInt", function(min:Int, max:Int = FlxMath.MAX_VALUE_INT, exclude:String = '')

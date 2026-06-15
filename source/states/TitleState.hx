@@ -71,6 +71,9 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		initScripts(Paths.getSharedPath(), 'scripts/');
+		initScripts(Paths.getSharedPath(), 'scripts/states/TitleState/');
+
 		Paths.clearStoredMemory();
 		super.create();
 		Paths.clearUnusedMemory();
@@ -125,6 +128,8 @@ class TitleState extends MusicBeatState
 			startIntro();
 		}
 		#end
+
+		callOnScripts('onCreatePost');
 	}
 
 	override function destroy()
@@ -143,6 +148,8 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
+		callOnScripts('onStartIntro');
+
 		persistentUpdate = true;
 		startedIntro = true;
 
@@ -152,9 +159,6 @@ class TitleState extends MusicBeatState
 		loadJsonData();
 		#if TITLE_SCREEN_EASTER_EGG easterEggData(); #end
 		Conductor.bpm = musicBPM;
-
-		initScripts(Paths.getSharedPath(), 'scripts/');
-		initScripts(Paths.getSharedPath(), 'scripts/states/TitleState/');
 
 		logoBl = new FlxSprite(logoPosition.x, logoPosition.y);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
@@ -238,8 +242,7 @@ class TitleState extends MusicBeatState
 			initialized = true;
 		}
 
-		// credGroup.add(credTextShit);
-		callOnScripts('onCreatePost');
+		callOnScripts('onStartIntroPost');
 	}
 
 	// JSON data

@@ -1287,7 +1287,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			updateScrollY();
 		}
 
-		Lib.application.window.title = '${!chartSaved ? '* ' : ''}${Lib.application.meta["name"]}';
+		Lib.application.window.title = '${!chartSaved ? '* ' : ''}${Mods.parseList().enabled.length == 0 ? FlxG.stage.application.meta.get('name') : Mods.getPack(Mods.parseList().enabled[0]).name}';
 
 		FlxG.watch.addQuick('nearestList', nearestList);
 
@@ -6669,7 +6669,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		MetaNote.noteTypeTexts = [];
 		fileDialog.destroy();
 
-		Lib.application.window.title = '${Lib.application.meta["name"]}';
+		Lib.application.window.title = '${Mods.parseList().enabled.length == 0 ? FlxG.stage.application.meta.get('name') : Mods.getPack(Mods.parseList().enabled[0]).name}';
 		Main.onClose = null;
 		super.destroy();
 		instance = null;

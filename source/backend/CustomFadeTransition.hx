@@ -6,7 +6,7 @@ import flixel.util.FlxGradient;
 class CustomFadeTransition extends MusicBeatSubstate
 {
 	public static var finishCallback:Void->Void;
-	public static var name:String;
+	public static var name:String = 'default';
 
 	var isTransIn:Bool = false;
 	var transBlack:FlxSprite;

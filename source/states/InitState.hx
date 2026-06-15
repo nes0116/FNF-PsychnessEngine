@@ -1,5 +1,8 @@
 package states;
 
+import openfl.Lib;
+import lime.graphics.Image;
+
 class InitState extends MusicBeatState
 {
 	override function create()
@@ -59,6 +62,12 @@ class InitState extends MusicBeatState
 		}
 
 		FlxG.mouse.visible = false;
+
+		var mod:Dynamic = Mods.getPack(Mods.parseList().enabled[0]);
+		FlxG.stage.window.title = mod != null && mod.name != null ? mod.name : FlxG.stage.application.meta.get('name');
+		var iconPath:String = 'mods/${Mods.currentModDirectory}/pack.png';
+		if (FileSystem.exists(iconPath))
+			Lib.application.window.setIcon(Image.fromFile(iconPath));
 
 		initScripts(Paths.getSharedPath(), 'scripts/');
 		initScripts(Paths.getSharedPath(), 'scripts/states/InitState/');

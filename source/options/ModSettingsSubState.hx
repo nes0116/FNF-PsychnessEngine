@@ -2,7 +2,6 @@ package options;
 
 import flixel.input.keyboard.FlxKey;
 import flixel.input.gamepad.FlxGamepadInputID;
-import objects.Character;
 import options.Option.OptionType;
 
 class ModSettingsSubState extends BaseOptionsMenu
