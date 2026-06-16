@@ -214,16 +214,7 @@ class DebugDisplay extends Sprite
 				screenshotPreview.buttonMode = true;
 				screenshotPreview.addEventListener(MouseEvent.MOUSE_DOWN, (e:MouseEvent) ->
 				{
-					var folderPath = Sys.getCwd().replace('/', '\\');
-					folderPath += 'screenshots\\';
-					try
-					{
-						var process = new sys.io.Process('explorer $folderPath');
-					}
-					catch (e)
-					{
-						trace('Failed to open folder: ' + e.message);
-					}
+					CoolUtil.openFolder('screenshots/');
 				});
 				FlxTween.tween(screenshotPreview, {y: screenshotPreview.y + 10}, 0.25, {ease: FlxEase.quadOut});
 

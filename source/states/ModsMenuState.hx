@@ -1,5 +1,6 @@
 package states;
 
+import flixel.input.mouse.FlxMouseEvent;
 import options.ModSettingsSubState;
 import flixel.graphics.FlxGraphic;
 import openfl.filters.GlowFilter;
@@ -22,9 +23,10 @@ class ModsMenuState extends MusicBeatState
 	var modLength:Int = 0;
 
 	var descText:FlxText;
+	var openModsFolderText:FlxText;
 
 	var modsList:ModsList = null;
-	var modData:Dynamic = null;
+	var curModData:Dynamic = null;
 
 	override function create()
 	{
@@ -41,7 +43,7 @@ class ModsMenuState extends MusicBeatState
 		persistentUpdate = true;
 
 		modsList = Mods.parseList();
-		modData = Mods.getPack(Mods.currentModDirectory);
+		curModData = Mods.getPack(Mods.currentModDirectory);
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
@@ -145,6 +147,25 @@ class ModsMenuState extends MusicBeatState
 		descText.borderSize = 2.4;
 		add(descText);
 
+		openModsFolderText = new FlxText(0, 0, 0, "Open Mods Folder...", 32);
+		openModsFolderText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		openModsFolderText.scrollFactor.set();
+		openModsFolderText.borderSize = 2.4;
+		openModsFolderText.alpha = 0.75;
+		openModsFolderText.x = FlxG.width - openModsFolderText.width - 10;
+		openModsFolderText.y = 10;
+		add(openModsFolderText);
+		FlxMouseEvent.add(openModsFolderText, (_) ->
+		{
+			CoolUtil.openFolder('mods/');
+		}, null, (_) ->
+			{
+				_.alpha = 1;
+			}, (_) ->
+			{
+				_.alpha = 0.75;
+			}, false, true, false);
+
 		camFollow = new FlxObject(0, FlxG.height / 2 - 1, 2, 2);
 		add(camFollow);
 
@@ -207,6 +228,12 @@ class ModsMenuState extends MusicBeatState
 				if (grpPackages.members[curMod].isBlank)
 					return;
 
+				if (!FileSystem.exists('mods/${grpPackages.members[curMod].modDirectory}/pack.json'))
+				{
+					FlxG.sound.play(Paths.sound('cancelMenu'));
+					return;
+				}
+
 				persistentUpdate = false;
 
 				canControl = false;
@@ -251,7 +278,11 @@ class ModsMenuState extends MusicBeatState
 
 			{
 				var curMod:Dynamic = grpPackages.members[curMod];
-				if (FlxG.keys.justPressed.CONTROL && curMod != null && curMod.settings != null && curMod.settings.length > 0)
+				if (FlxG.keys.justPressed.CONTROL
+					&& curMod != null
+					&& curMod.settings != null
+					&& curMod.settings.length > 0
+					&& Mods.getPack(curMod.modDirectory) != null)
 				{
 					persistentUpdate = false;
 					openSubState(new ModSettingsSubState(curMod.settings, curMod.modDirectory, Mods.getPack(curMod.modDirectory).name));
@@ -273,12 +304,17 @@ class ModsMenuState extends MusicBeatState
 			pack.selected = pack.ID == curMod;
 			if (directory != null)
 			{
-				if (canControl && pack.label.text == modData.name)
+				if (curModData != null)
 				{
-					pack.label.offset.x = -directory.width / 2 + -7.5;
-					directory.x = pack.label.x - pack.label.offset.x - directory.width - 15;
-					directory.visible = pack.selected;
+					if (canControl && pack.label.text == curModData.name)
+					{
+						pack.label.offset.x = -directory.width / 2 + -7.5;
+						directory.x = pack.label.x - pack.label.offset.x - directory.width - 15;
+						directory.visible = pack.selected;
+					}
 				}
+				else
+					directory.visible = false;
 			}
 		}
 
@@ -318,11 +354,12 @@ class ModsMenuState extends MusicBeatState
 		var curModPack:Package = grpPackages.members[curMod];
 		var pack:Dynamic = Mods.getPack(modsList.all[curMod]);
 		var targetColor:Int = FlxColor.WHITE;
-		if (!curModPack.isBlank)
+		if (!curModPack.isBlank && pack != null && pack.color != null)
 			targetColor = FlxColor.fromRGB(pack.color[0], pack.color[1], pack.color[2]);
 		FlxTween.color(bg, 0.5, bg.color, targetColor, {ease: FlxEase.linear});
 
-		descText.text = curModPack.isBlank ? '' : pack.description != null ? pack.description : '';
+		descText.text = curModPack.isBlank ? '' : pack != null
+			&& pack.description != null ? pack.description : 'mods/${curModPack.modDirectory}/pack.json DOES NOT EXIST!!';
 		descText.screenCenter(Y);
 		descText.y += 270;
 	}
@@ -428,7 +465,8 @@ class Package extends FlxSpriteGroup
 		add(outline);
 		add(icon);
 
-		label = new FlxText(0, 0, 0, isBlank ? '' : Mods.getPack(name).name);
+		label = new FlxText(0, 0, 0, isBlank ? '' : Mods.getPack(name) == null
+			|| Mods.getPack(name).name == null ? 'Unknown Mod' : Mods.getPack(name).name);
 		label.antialiasing = false;
 		label.setFormat(Paths.font('vcr.ttf'), 32, 0xFF33A3FF);
 		label.borderSize = 1;

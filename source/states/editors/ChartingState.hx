@@ -4515,19 +4515,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			upperBox.isMinimized = true;
 			upperBox.bg.visible = false;
 
-			var folderPath = Sys.getCwd().replace('/', '\\');
-			if (Mods.currentModDirectory.length > 0)
-				folderPath += 'mods\\${Mods.currentModDirectory}\\data\\';
-			else
-				folderPath += 'assets\\shared\\data\\';
-			try
-			{
-				var process = new sys.io.Process('explorer $folderPath');
-			}
-			catch (e)
-			{
-				trace('Failed to open folder: ' + e.message);
-			}
+			var folderPath = Mods.currentModDirectory.length > 0 ? 'mods/${Mods.currentModDirectory}/data/' : 'assets/shared/data/';
+			CoolUtil.openFolder(folderPath);
 		}, btnWid);
 		btn.description = 'Open Data Folder...\n- Open data folder.';
 		btn.text.alignment = LEFT;
@@ -4580,7 +4569,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			btn.text.alignment = LEFT;
 			tab_group.add(btn);
 		}
-		
+
 		btnY++;
 		btnY += 20;
 		var btn:PsychUIButton = new PsychUIButton(btnX, btnY, '  Reload Chart', function()
