@@ -2788,7 +2788,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				for (note in notes.filter(otherSecFilter))
 				{
 					behindRenderedNotes.add(note);
-					positionNoteXByData(note, note.noteData);
+					positionNoteXByData(note, note.songData[1]);
 					note.alpha = 0.4;
 					if (note.hasSustain)
 						note.updateSustainToZoom(cachedSectionCrochets[curSec] / 4, curZoom);
