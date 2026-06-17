@@ -44,7 +44,7 @@ class MainMenuState extends MusicBeatState
 	var psychVer:FlxText;
 	var fnfVer:FlxText;
 
-	static var showOutdatedWarning:Bool = false;
+	static var showOutdatedWarning:Bool = true;
 
 	override function create()
 	{
