@@ -57,7 +57,7 @@ class DebugDisplay extends Sprite
 			addChildAt(logBG, getChildIndex(frameBG));
 
 			var logTF:TextField = new TextField();
-			logTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('HackGenConsoleNF-Regular.ttf')).fontName, 16, color);
+			logTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('SOROEMONO-Regular.ttf')).fontName, 16, color);
 			logTF.text = Std.string(value);
 			logTF.autoSize = RIGHT;
 			logTF.selectable = true;
@@ -123,7 +123,7 @@ class DebugDisplay extends Sprite
 		addChild(frameBG);
 
 		frameTF = new TextField();
-		frameTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('HackGenConsoleNF-Regular.ttf')).fontName, 16, 0xFFFFFF);
+		frameTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('SOROEMONO-Regular.ttf')).fontName, 16, 0xFFFFFF);
 		frameTF.autoSize = LEFT;
 		frameTF.selectable = false;
 		addChild(frameTF);
@@ -133,7 +133,7 @@ class DebugDisplay extends Sprite
 		addChild(engineBG);
 
 		engineTF = new TextField();
-		engineTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('HackGenConsoleNF-Regular.ttf')).fontName, 16, 0xFFFFFF);
+		engineTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('SOROEMONO-Regular.ttf')).fontName, 16, 0xFFFFFF);
 		engineTF.autoSize = LEFT;
 		engineTF.selectable = false;
 		addChild(engineTF);
@@ -143,7 +143,7 @@ class DebugDisplay extends Sprite
 		addChild(stateBG);
 
 		stateTF = new TextField();
-		stateTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('HackGenConsoleNF-Regular.ttf')).fontName, 16, 0xFFFFFF);
+		stateTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('SOROEMONO-Regular.ttf')).fontName, 16, 0xFFFFFF);
 		stateTF.autoSize = LEFT;
 		stateTF.selectable = false;
 		addChild(stateTF);
@@ -153,7 +153,7 @@ class DebugDisplay extends Sprite
 		addChild(scriptBG);
 
 		scriptTF = new TextField();
-		scriptTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('HackGenConsoleNF-Regular.ttf')).fontName, 16, 0xFFFFFF);
+		scriptTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('SOROEMONO-Regular.ttf')).fontName, 16, 0xFFFFFF);
 		scriptTF.autoSize = LEFT;
 		scriptTF.selectable = false;
 		addChild(scriptTF);
@@ -163,7 +163,7 @@ class DebugDisplay extends Sprite
 		addChild(debugBG);
 
 		debugTF = new TextField();
-		debugTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('HackGenConsoleNF-Regular.ttf')).fontName, 16, 0xFFFFFF);
+		debugTF.defaultTextFormat = new TextFormat(openfl.utils.Assets.getFont(Paths.font('SOROEMONO-Regular.ttf')).fontName, 16, 0xFFFFFF);
 		debugTF.autoSize = LEFT;
 		debugTF.selectable = false;
 		addChild(debugTF);
@@ -315,14 +315,26 @@ class DebugDisplay extends Sprite
 		frameTF.text = 'FPS: ${Std.string(Math.floor(currentFPS))}'
 			+ '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(memoryMegas)} / ${flixel.util.FlxStringUtil.formatBytes(maxMemoryMegas)}';
 
-		engineTF.text = 'Psych Engine: v${MainMenuState.psychEngineVersion}' + '\nPsychness Engine: v${MainMenuState.psychnessEngineVersion}';
+		engineTF.text = '[  ENGINE INFO  ]'
+			+ '\nPsych Engine: v${MainMenuState.psychEngineVersion}'
+			+ '\nPsychness Engine: v${MainMenuState.psychnessEngineVersion}';
 
-		var curState:String = Type.getClassName(Type.getClass(FlxG.state));
-		stateTF.text = 'Current State: $curState'
-			+ (curState == 'psychlua.CustomState' ? ' (${CustomState.name})' : '')
-			+ '\nObjects: ${FlxG.state.members.length}';
+		@:privateAccess
+		{
+			var curState:String = Type.getClassName(Type.getClass(FlxG.state));
+			stateTF.text = '[  FLIXEL INFO  ]'
+				+ '\nState: $curState'
+				+ (curState == 'psychlua.CustomState' ? ' (${CustomState.name})' : '')
+				+ '\nBitmap Count: ${Lambda.count(FlxG.bitmap._cache)}'
+				+ '\nCamera Count: ${FlxG.cameras.list.length}'
+				+ '\nFlxG.game Childs Count: ${FlxG.game.numChildren}'
+				+ '\nObject Count: ${FlxG.state.members.length}'
+				+ '\nSound Count: ${FlxG.sound.list.length}';
+		}
 
-		scriptTF.text = 'Running Lua Scripts: ${MusicBeatState.instance == null ? 0 : MusicBeatState.instance.luaArray.length}'
+		scriptTF.text = '[  MOD INFO  ]'
+			+ '${Mods.parseList().enabled.length > 0 ? '\nCurrent Mod: ${Mods.parseList().enabled[0]}' : ''}'
+			+ '\nRunning Lua Scripts: ${MusicBeatState.instance == null ? 0 : MusicBeatState.instance.luaArray.length}'
 			+ '\nRunning Haxe Sctipts: ${MusicBeatState.instance == null ? 0 : MusicBeatState.instance.hscriptArray.length}';
 
 		debugBG.visible = debugTF.visible = debugTF.text.length != 0;

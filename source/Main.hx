@@ -6,7 +6,6 @@ import states.FreeplayState;
 import android.content.Context;
 #end
 import debug.DebugDisplay;
-import debug.FPSCounter;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -177,6 +176,11 @@ class Main extends Sprite
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
 		addChild(new FlxGame(game.width, game.height, game.initialState, game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
 		updateLogOptions();
+
+		@:privateAccess
+		{
+			FlxG.game._customSoundTray = backend.PsychnessSoundTray;
+		}
 
 		#if !mobile
 		fpsVar = new DebugDisplay(10, 10);

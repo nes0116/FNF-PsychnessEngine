@@ -40,6 +40,9 @@ class ModsMenuState extends MusicBeatState
 
 		super.create();
 
+		initScripts(Paths.getSharedPath(), 'scripts/');
+		initScripts(Paths.getSharedPath(), 'scripts/states/ModsMenuState/');
+
 		persistentUpdate = true;
 
 		modsList = Mods.parseList();
@@ -178,6 +181,8 @@ class ModsMenuState extends MusicBeatState
 		new FlxTimer().start(0.01, (_) -> FlxG.camera.followLerp = 0.25);
 
 		FlxG.mouse.visible = true;
+
+		callOnScripts('onCreatePost');
 	}
 
 	var canControl:Bool = true;
@@ -186,6 +191,8 @@ class ModsMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		callOnScripts('onUpdate', [elapsed]);
 
 		if (canControl)
 		{
@@ -233,6 +240,8 @@ class ModsMenuState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					return;
 				}
+
+				callOnScripts('onSwitchMod', [grpPackages.members[curMod].modDirectory]);
 
 				persistentUpdate = false;
 
@@ -319,6 +328,8 @@ class ModsMenuState extends MusicBeatState
 		}
 
 		camFollow.x = grpPackages.members[curMod].x + Package.packageWidth / 2;
+
+		callOnScripts('onUpdatePost', [elapsed]);
 	}
 
 	function changeMod(value:Int)

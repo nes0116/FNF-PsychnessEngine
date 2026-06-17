@@ -65,23 +65,26 @@ class InitState extends MusicBeatState
 		FlxG.mouse.visible = false;
 
 		var modsList:ModsList = Mods.parseList();
-		var curMod:Dynamic = modsList.enabled[0];
-		if (!FileSystem.exists('mods/$curMod/pack.json'))
+		if (modsList.enabled.length > 0)
 		{
-			var data:Dynamic = {
-				name: 'MOD NAME HERE',
-				description: 'MOD DESCRIPTION HERE',
-				color: [128, 128, 128],
-				discordRPC: "863222024192262205",
+			var curMod:Dynamic = modsList.enabled[0];
+			if (!FileSystem.exists('mods/$curMod/pack.json'))
+			{
+				var data:Dynamic = {
+					name: 'MOD NAME HERE',
+					description: 'MOD DESCRIPTION HERE',
+					color: [128, 128, 128],
+					discordRPC: "863222024192262205",
+				}
+				File.saveContent('mods/$curMod/pack.json', PsychJsonPrinter.print(data));
 			}
-			File.saveContent('mods/$curMod/pack.json', PsychJsonPrinter.print(data));
-		}
 
-		var mod:Dynamic = Mods.getPack(curMod);
-		FlxG.stage.window.title = mod != null && mod.name != null ? mod.name : FlxG.stage.application.meta.get('name');
-		var iconPath:String = 'mods/${Mods.currentModDirectory}/pack.png';
-		if (FileSystem.exists(iconPath))
-			Lib.application.window.setIcon(Image.fromFile(iconPath));
+			var mod:Dynamic = Mods.getPack(curMod);
+			FlxG.stage.window.title = mod != null && mod.name != null ? mod.name : FlxG.stage.application.meta.get('name');
+			var iconPath:String = 'mods/${Mods.currentModDirectory}/pack.png';
+			if (FileSystem.exists(iconPath))
+				Lib.application.window.setIcon(Image.fromFile(iconPath));
+		}
 
 		initScripts(Paths.getSharedPath(), 'scripts/');
 		initScripts(Paths.getSharedPath(), 'scripts/states/InitState/');
